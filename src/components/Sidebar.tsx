@@ -22,6 +22,7 @@ const nav = [
   {
     group: 'Query Builder',
     items: [
+      { label: 'Overview', href: '/docs/query-builder' },
       { label: 'select()', href: '/docs/query-builder/select' },
       { label: 'where()', href: '/docs/query-builder/where' },
       { label: 'Joins', href: '/docs/query-builder/joins' },
@@ -31,6 +32,7 @@ const nav = [
       { label: 'Subqueries', href: '/docs/query-builder/subqueries' },
       { label: 'Relation Traversal', href: '/docs/query-builder/relation-traversal' },
       { label: 'Scopes', href: '/docs/query-builder/scopes' },
+      { label: 'withTrashed / onlyTrashed', href: '/docs/soft-delete' },
     ],
   },
   {

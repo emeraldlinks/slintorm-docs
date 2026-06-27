@@ -39,6 +39,25 @@ const posts = await Post.query()
   .exclude('user.password')   // strips from nested user objects
   .get();`;
 
+const getMethod = `// .get() — terminal method, executes the query
+// Returns EntityWithUpdate<T>[] — every row augmented with
+// .update(), .delete(), .refresh(), .toJSON()
+
+const users = await User.query()
+  .where('active', '=', true)
+  .orderBy('name', 'ASC')
+  .get();
+
+// users is EntityWithUpdate<User>[]
+// users[0].update({ name: 'Bob' })  — works directly
+// users[0].toJSON()                 — plain object, no ORM methods
+
+// Empty result: returns [] not null
+const none = await User.query()
+  .where('role', '=', 'nonexistent')
+  .get();
+// none.length === 0`;
+
 export default function SelectPage() {
   return (
     <DocLayout>
@@ -68,6 +87,14 @@ export default function SelectPage() {
       </p>
       <CodeBlock code={selectExclude} />
       <CodeBlock code={selectNested} />
+
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>get() — execute the query</h2>
+      <p style={{ marginBottom: '0.75rem' }}>
+        <code>.get()</code> is the primary terminal method on every builder. It fires the accumulated
+        SQL and returns <code>EntityWithUpdate&lt;T&gt;[]</code>. No query is sent to the database
+        until <code>.get()</code>, <code>.first()</code>, or <code>.getPaginated()</code> is called.
+      </p>
+      <CodeBlock code={getMethod} />
     </DocLayout>
   );
 }
