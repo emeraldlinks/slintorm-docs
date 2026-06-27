@@ -3,8 +3,31 @@ import CodeBlock from '@/components/CodeBlock';
 
 export const metadata = { title: 'Scopes — SlintORM Query Builder' };
 
+const extendedClass = `// ExtendedQueryBuilder<T> — returned by model.extended()
+// Extends QueryBuilder<T> with one additional method: scope()
+//
+// This means ALL base QueryBuilder methods are available:
+//   .where()        .orWhere()       .whereRaw()
+//   .whereIn()      .whereNotIn()    .whereNull()     .whereNotNull()
+//   .whereBetween() .ILike()
+//   .select()       .exclude()       .orderBy()
+//   .limit()        .offset()        .paginate()
+//   .join()         .leftJoin()      .preload()
+//   .throughRelation() .whereRelated() .relatedTo()
+//   .get()          .first()         .getPaginated()
+//
+// Plus:
+//   .scope(fn)      — add a reusable, lazily-applied query fragment
+
+const users = await User.extended()
+  .where('active', '=', true)     // base QB method
+  .preload('posts')               // base QB method
+  .scope(q => q.whereNotNull('verifiedAt'))  // ExtendedQueryBuilder only
+  .orderBy('name', 'ASC')         // base QB method
+  .limit(50)                      // base QB method
+  .get();`;
+
 const basicScope = `// .scope(fn) — reusable, composable query fragment
-// Available via model.extended() -> ExtendedQueryBuilder<T>
 // Scopes are lazy — applied just before SQL is built
 
 const activeUsers = await User.extended()
@@ -60,12 +83,27 @@ const users = await User.extended()
   .orderBy('name', 'ASC')
   .get();`;
 
+const scopeWithPreload = `// Scopes work alongside ALL other QB methods
+// including preload, join, paginate
+
+const publishedPostsForTeam = await Post.extended()
+  .scope(q => q.where('published', '=', true))
+  .scope(q => q.whereNotNull('publishedAt'))
+  .preload('user')
+  .preload('comments')
+  .exclude('user.password')
+  .orderBy('publishedAt', 'DESC')
+  .getPaginated(1, 20);
+
+// Scopes are resolved last, but the resulting SQL is identical to
+// writing .where() calls directly — no performance difference`;
+
 const lazyExplained = `// Scopes are lazy — they run just before .buildSql() is called
 // This means you can add scopes and other clauses in any order
 
 const q = User.extended();
 
-// Add scope and regular clauses interleaved — all resolved at build time
+// Interleave scopes and regular clauses — all resolved at build time
 q.scope(q => q.where('active', '=', true));
 q.orderBy('name', 'ASC');
 q.scope(q => q.whereNotNull('email'));
@@ -74,15 +112,49 @@ q.limit(20);
 const users = await q.get();
 // All conditions applied correctly regardless of declaration order`;
 
+const standaloneValidator = `// Validator<T> — standalone class exported from 'slintorm'
+// The same engine used by model.validate() and model.check()
+// Use it outside of a model context if needed
+
+import { Validator } from 'slintorm';
+
+const validator = new Validator<{ email: string; age: number }>();
+
+// validate() — throws ValidationError
+await validator.validate(
+  { email: 'bad', age: 15 },
+  {
+    email: { required: true, email: true },
+    age:   { required: true, min: 18 },
+  }
+);
+
+// check() — returns error map or null
+const errors = await validator.check(
+  { email: 'joe@example.com', age: 25 },
+  {
+    email: { required: true, email: true },
+    age:   { required: true, min: 18 },
+  }
+);
+// null — all valid`;
+
 export default function ScopesPage() {
   return (
     <DocLayout>
-      <h1 style={{ marginBottom: '0.5rem' }}>Scopes</h1>
+      <h1 style={{ marginBottom: '0.5rem' }}>Scopes & ExtendedQueryBuilder</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
-        <code>.scope(fn)</code> adds a reusable, composable query fragment to the builder.
-        Available via <code>model.extended()</code> which returns an <code>ExtendedQueryBuilder&lt;T&gt;</code>.
-        Scopes are lazy — they run just before SQL is built.
+        <code>model.extended()</code> returns an <code>ExtendedQueryBuilder&lt;T&gt;</code> —
+        a full <code>QueryBuilder&lt;T&gt;</code> with one additional method: <code>.scope(fn)</code>.
+        Every base QB method (<code>where</code>, <code>preload</code>, <code>orderBy</code>, etc.) is available.
       </p>
+
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>ExtendedQueryBuilder — what it inherits</h2>
+      <p style={{ marginBottom: '0.75rem' }}>
+        <code>ExtendedQueryBuilder&lt;T&gt;</code> is a superset of <code>QueryBuilder&lt;T&gt;</code>.
+        Use it exactly like <code>model.query()</code> but with <code>.scope()</code> available.
+      </p>
+      <CodeBlock code={extendedClass} />
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Basic scope</h2>
       <CodeBlock code={basicScope} />
@@ -96,12 +168,27 @@ export default function ScopesPage() {
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Scopes with arguments</h2>
       <CodeBlock code={scopeWithArgs} />
 
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Scopes alongside preload, join, paginate</h2>
+      <p style={{ marginBottom: '0.75rem' }}>
+        Because <code>ExtendedQueryBuilder</code> inherits the full base QB, scopes compose
+        naturally with every other method.
+      </p>
+      <CodeBlock code={scopeWithPreload} />
+
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Lazy application</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        Scopes don't execute immediately. They're stored and applied when the query is built.
-        This means you can mix scopes and regular clauses in any order.
+        Scopes don&apos;t execute immediately. They&apos;re stored and applied just before
+        <code>.buildSql()</code> is called, so you can mix scopes and regular clauses in any order.
       </p>
       <CodeBlock code={lazyExplained} />
+
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Validator — standalone class</h2>
+      <p style={{ marginBottom: '0.75rem' }}>
+        <code>Validator&lt;T&gt;</code> is the class behind <code>model.validate()</code> and
+        <code>model.check()</code>. It&apos;s exported directly from <code>slintorm</code> for
+        use outside of a model context — validating arbitrary objects, request bodies, or config.
+      </p>
+      <CodeBlock code={standaloneValidator} />
     </DocLayout>
   );
 }

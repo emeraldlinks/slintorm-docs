@@ -111,7 +111,7 @@ const pages = [
   { href: '/docs/query-builder/aggregates', label: 'Aggregates', desc: 'countAggregate, sum, avg, min, max, groupBy, having, distinct, window functions' },
   { href: '/docs/query-builder/subqueries', label: 'Subqueries', desc: 'selectSubquery, exists, notExists, whereRaw subqueries, UNION / UNION ALL' },
   { href: '/docs/query-builder/relation-traversal', label: 'Relation Traversal', desc: 'throughRelation, whereRelated, relatedTo — filter across relations without manual SQL' },
-  { href: '/docs/query-builder/scopes', label: 'Scopes', desc: 'Reusable, composable, lazily-applied query fragments via scope()' },
+  { href: '/docs/query-builder/scopes', label: 'Scopes & ExtendedQueryBuilder', desc: 'scope(), ExtendedQueryBuilder full method inheritance, composable query fragments, Validator class' },
 ];
 
 export default function QueryBuilderIndexPage() {
