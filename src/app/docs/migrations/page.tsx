@@ -6,8 +6,8 @@ export const metadata = { title: 'Migrations — SlintORM' };
 const migrate = `// orm.migrate() — reads TypeScript source files,
 // generates schema, diffs against current DB state, applies DDL
 
-import { createORM } from 'slintorm';
-const orm = createORM({ driver: 'sqlite', databaseUrl: './dev.db', dir: './src' });
+import ORMManager from 'slintorm';
+const orm = new ORMManager({ driver: 'sqlite', databaseUrl: './dev.db', dir: './src' });
 
 // Run once on startup or in a migration script
 await orm.migrate();

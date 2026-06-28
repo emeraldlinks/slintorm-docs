@@ -7,15 +7,15 @@ const sqliteSetup = `// SQLite — better-sqlite3 (recommended)
 // WAL mode enabled automatically for better concurrency
 // Synchronous driver wrapped in async interface
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-const orm = createORM({
+const orm = new ORMManager({
   driver: 'sqlite',
   databaseUrl: './dev.db',    // file path
 });
 
 // In-memory database (tests / ephemeral):
-const memOrm = createORM({
+const memOrm = new ORMManager({
   driver: 'sqlite',
   databaseUrl: ':memory:',
 });
@@ -27,9 +27,9 @@ const pgSetup = `// PostgreSQL — pg
 // Uses $1-style positional placeholders
 // RETURNING * on INSERT to get the full row back
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-const orm = createORM({
+const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
   // postgresql://user:password@host:5432/database
@@ -40,9 +40,9 @@ const mysqlSetup = `// MySQL — mysql2/promise
 // Backtick quoting for identifiers
 // ON DUPLICATE KEY UPDATE for upsert
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-const orm = createORM({
+const orm = new ORMManager({
   driver: 'mysql',
   databaseUrl: 'mysql://user:password@localhost:3306/mydb',
 });`;
@@ -52,9 +52,9 @@ const mongoSetup = `// MongoDB — uses a JSON command protocol
 // DDL is a no-op (MongoDB is schemaless)
 // Note: no transaction support, no UNION, limited JOIN support
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-const orm = createORM({
+const orm = new ORMManager({
   driver: 'mongodb',
   databaseUrl: process.env.MONGO_URI!,
   // mongodb://user:pass@host:27017/mydb
@@ -73,7 +73,8 @@ for (const id of userIds) {
 const closeConn = `// DBAdapter.close() — clean connection teardown
 // Call when shutting down (e.g. SIGTERM handler, test teardown)
 
-const orm = createORM({ ... });
+import ORMManager from 'slintorm';
+const orm = new ORMManager({ ... });
 // ... use orm ...
 
 process.on('SIGTERM', async () => {

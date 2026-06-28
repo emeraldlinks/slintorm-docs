@@ -55,10 +55,10 @@ const plain = user.toJSON();                          // -> User (no ORM methods
 const dbStore = `// DBStore<TModelMap> — typed db object
 // Access all models without individual exports
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = createORM<typeof ModelMap>({
+const orm = new ORMManager<typeof ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as typeof ModelMap,
@@ -177,10 +177,10 @@ export const ModelMap = {
 export type ModelMap = typeof ModelMap;
 
 // Usage in db.ts:
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = createORM<typeof ModelMap>({
+const orm = new ORMManager<typeof ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as typeof ModelMap,

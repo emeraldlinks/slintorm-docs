@@ -2,7 +2,7 @@ import Link from 'next/link';
 import CodeBlock from '@/components/CodeBlock';
 import FeatureCard from '@/components/FeatureCard';
 
-const quickstart = `import { createORM } from 'slintorm';
+const quickstart = `import ORMManager from 'slintorm';
 
 interface User {
   id: number;
@@ -11,7 +11,7 @@ interface User {
   name: string;
 }
 
-const orm = createORM({ driver: 'sqlite', databaseUrl: './dev.db' });
+const orm = new ORMManager({ driver: 'sqlite', databaseUrl: './dev.db' });
 await orm.migrate();
 
 const User = orm.defineModel<User>('users', 'User');

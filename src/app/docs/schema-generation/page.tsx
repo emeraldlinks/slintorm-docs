@@ -79,10 +79,10 @@ const howGenerator = `// How generator.ts works — no ts-morph, no compiler API
 
 const modelMapUsage = `// Use ModelMap for a fully-typed db without individual defineModel exports
 
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = createORM<typeof ModelMap>({
+const orm = new ORMManager<typeof ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as typeof ModelMap,  // type-only — no runtime value

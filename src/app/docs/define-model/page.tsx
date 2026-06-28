@@ -4,7 +4,7 @@ import CodeBlock from '@/components/CodeBlock';
 export const metadata = { title: 'defineModel — SlintORM' };
 
 const manualExport = `// db.ts
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
 interface User {
   id: number;
@@ -18,7 +18,7 @@ interface Post {
   userId: number;
 }
 
-const orm = createORM({ driver: 'sqlite', databaseUrl: './dev.db' });
+const orm = new ORMManager({ driver: 'sqlite', databaseUrl: './dev.db' });
 await orm.migrate();
 
 // Export each model individually
@@ -60,10 +60,10 @@ export const User = orm.defineModel<User>('users', 'User', {
 });`;
 
 const modelMapPattern = `// db.ts — ModelMap pattern (recommended for large projects)
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = createORM<typeof ModelMap>({
+const orm = new ORMManager<typeof ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as typeof ModelMap,

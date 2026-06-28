@@ -21,9 +21,9 @@ const packageJson = `// package.json
 }`;
 
 const sqliteInit = `// db.ts — SQLite
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-export const orm = createORM({
+export const orm = new ORMManager({
   driver: 'sqlite',
   databaseUrl: './dev.db',   // path to file, or ':memory:'
   dir: './src',
@@ -33,9 +33,9 @@ export const orm = createORM({
 await orm.migrate();`;
 
 const postgresInit = `// db.ts — PostgreSQL
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-export const orm = createORM({
+export const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!, // postgresql://user:pass@host/db
   dir: './src',
@@ -44,9 +44,9 @@ export const orm = createORM({
 await orm.migrate();`;
 
 const mysqlInit = `// db.ts — MySQL
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-export const orm = createORM({
+export const orm = new ORMManager({
   driver: 'mysql',
   databaseUrl: 'mysql://user:pass@localhost/mydb',
   dir: './src',
@@ -55,9 +55,9 @@ export const orm = createORM({
 await orm.migrate();`;
 
 const mongoInit = `// db.ts — MongoDB
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 
-export const orm = createORM({
+export const orm = new ORMManager({
   driver: 'mongodb',
   databaseUrl: process.env.MONGO_URI!,
   dir: './src',
@@ -66,10 +66,10 @@ export const orm = createORM({
 await orm.migrate();`;
 
 const withModelMap = `// db.ts — typed db store via ModelMap
-import { createORM } from 'slintorm';
+import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-export const orm = createORM<typeof ModelMap>({
+export const orm = new ORMManager<typeof ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as typeof ModelMap,
@@ -93,8 +93,25 @@ export default function ConfigurationPage() {
     <DocLayout>
       <h1 style={{ marginBottom: '0.5rem' }}>Configuration</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
-        SlintORM resolves config from three sources in priority order: CLI flags, <code>slintorm.config.js</code>, then the <code>"slintorm"</code> key in <code>package.json</code>.
+        SlintORM resolves config from three sources in priority order: CLI flags, <code>slintorm.config.js</code>, then the <code>&quot;slintorm&quot;</code> key in <code>package.json</code>.
       </p>
+
+      <div style={{
+        background: 'rgba(34, 197, 94, 0.08)',
+        border: '1px solid rgba(34, 197, 94, 0.2)',
+        borderRadius: '8px',
+        padding: '1rem 1.25rem',
+        marginBottom: '2rem',
+        fontSize: '0.875rem',
+      }}>
+        <strong style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Recommended: new ORMManager()</strong>
+        <p style={{ marginTop: '0.25rem', color: 'var(--color-fg-muted)' }}>
+          <code>ORMManager</code> is the default export and the primary class. Use <code>new ORMManager(config)</code> directly.
+          It gives you a real class instance — supporting <code>instanceof</code> checks, subclassing, and cleaner
+          generic inference for typed <code>db</code> stores. The functional <code>createORM</code> alias exists
+          but is not the recommended pattern.
+        </p>
+      </div>
 
       <h2 style={{ marginBottom: '1rem', marginTop: '2rem' }}>ORMManagerConfig options</h2>
       <div style={{ border: '1px solid var(--color-border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '2rem' }}>

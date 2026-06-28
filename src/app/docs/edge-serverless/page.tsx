@@ -86,9 +86,9 @@ const orm = new ORMManager({
 const ciMigration = `// scripts/migrate.ts — CI/CD migration script
 // Run this in your pipeline before deploying to edge
 
-import { createORM } from 'slintorm';   // Node.js — NOT edge import
+import ORMManager from 'slintorm';   // Node.js — NOT the edge import
 
-const orm = createORM({
+const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
   dir: './src',
