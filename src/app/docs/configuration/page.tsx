@@ -73,7 +73,6 @@ export const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as ModelMap,
-  schema: undefined, // or pre-built JSON for edge runtimes
 });
 
 // orm.db.User.insert(...)  — fully typed
