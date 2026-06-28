@@ -63,10 +63,10 @@ const modelMapPattern = `// db.ts — ModelMap pattern (recommended for large pr
 import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = new ORMManager<typeof ModelMap>({
+const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as typeof ModelMap,
+  modelMap: {} as ModelMap,
 });
 
 await orm.migrate();

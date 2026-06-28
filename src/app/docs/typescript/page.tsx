@@ -58,13 +58,13 @@ const dbStore = `// DBStore<TModelMap> — typed db object
 import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = new ORMManager<typeof ModelMap>({
+const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as typeof ModelMap,
+  modelMap: {} as ModelMap,
 });
 
-export const db: DBStore<typeof ModelMap> = orm.db;
+export const db: DBStore<ModelMap> = orm.db;
 
 // Fully typed:
 db.User.insert(...)      // knows User fields
@@ -75,7 +75,7 @@ const readonlyStore = `// ReadonlyDBStore<TModelMap>
 // Same as DBStore but all models are readonly (no insert/update/delete)
 // Useful for passing to functions that should only read
 
-function listUsers(db: ReadonlyDBStore<typeof ModelMap>) {
+function listUsers(db: ReadonlyDBStore<ModelMap>) {
   return db.User.getAll();  // allowed
   // db.User.insert(...)    // TypeScript error
 }`;
@@ -180,13 +180,13 @@ export type ModelMap = typeof ModelMap;
 import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = new ORMManager<typeof ModelMap>({
+const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as typeof ModelMap,
+  modelMap: {} as ModelMap,
 });
 
-// orm.db is typed as DBStore<typeof ModelMap>
+// orm.db is typed as DBStore<ModelMap>
 // orm.db.User, orm.db.Post, etc. are all fully typed`;
 
 export default function TypeScriptPage() {

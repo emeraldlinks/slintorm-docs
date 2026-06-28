@@ -82,10 +82,10 @@ const modelMapUsage = `// Use ModelMap for a fully-typed db without individual d
 import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-const orm = new ORMManager<typeof ModelMap>({
+const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as typeof ModelMap,  // type-only — no runtime value
+  modelMap: {} as ModelMap,  // type-only — no runtime value
 });
 
 await orm.migrate();

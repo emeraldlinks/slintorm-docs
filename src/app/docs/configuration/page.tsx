@@ -69,10 +69,10 @@ const withModelMap = `// db.ts — typed db store via ModelMap
 import ORMManager from 'slintorm';
 import type { ModelMap } from './schema/generated';
 
-export const orm = new ORMManager<typeof ModelMap>({
+export const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as typeof ModelMap,
+  modelMap: {} as ModelMap,
   schema: undefined, // or pre-built JSON for edge runtimes
 });
 
@@ -85,7 +85,7 @@ const options = [
   { key: 'dir', type: 'string', desc: 'Directory to scan for TypeScript interfaces. Defaults to process.cwd().' },
   { key: 'logs', type: 'boolean', desc: 'Log every SQL query to stdout. Default: false.' },
   { key: 'schema', type: 'object', desc: 'Pre-built schema JSON (from generated.json). Pass this instead of scanning files — required for edge runtimes.' },
-  { key: 'modelMap', type: 'object', desc: 'Type-only value for typing the db store. Use {} as typeof ModelMap from generated.ts.' },
+  { key: 'modelMap', type: 'object', desc: 'Type-only value for typing the db store. Use {} as ModelMap from generated.ts.' },
 ];
 
 export default function ConfigurationPage() {
