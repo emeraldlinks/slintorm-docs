@@ -80,12 +80,13 @@ const howGenerator = `// How generator.ts works — no ts-morph, no compiler API
 const modelMapUsage = `// Use ModelMap for a fully-typed db without individual defineModel exports
 
 import ORMManager from 'slintorm';
-import type { ModelMap } from './schema/generated';
+import { schema, type ModelMap } from './schema/generated';
 
 const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
-  modelMap: {} as ModelMap,  // type-only — no runtime value
+  modelMap: {} as ModelMap,
+  schema,   // skips filesystem scan; required on edge runtimes
 });
 
 await orm.migrate();
@@ -95,16 +96,16 @@ export const db = orm.db;
 // db.Post  — ModelAPI<Post>
 // TypeScript knows every field on every model`;
 
-const schemaOption = `// Pass pre-built JSON for edge runtimes (skip filesystem reads)
-// Run 'npx slintorm generate' at build time, import the JSON
+const schemaOption = `// Pass schema for edge runtimes (no filesystem reads, no migrate())
+// schema is exported directly from generated.ts — no JSON import needed
 
-import schemaJson from './schema/generated.json' assert { type: 'json' };
 import ORMManager from 'slintorm/browser';
+import { schema } from './schema/generated';
 
 const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
-  schema: schemaJson,  // no 'dir', no migrate()
+  schema,   // no 'dir', no migrate()
 });`;
 
 const whenToRegenerate = `// Re-run 'npx slintorm generate' when:
@@ -125,8 +126,8 @@ export default function SchemaGenerationPage() {
       <h1 style={{ marginBottom: '0.5rem' }}>Schema Generation</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
         <code>npx slintorm generate</code> scans your TypeScript source files and produces
-        two artifacts: a typed <code>ModelMap</code> for TypeScript and a JSON schema for edge runtimes.
-        No TypeScript compiler or ts-morph required.
+        <code>generated.ts</code> — a single file that exports <code>ModelMap</code>, <code>schema</code>,
+        and the interface types. No TypeScript compiler or ts-morph required.
       </p>
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Running the generator</h2>
@@ -134,14 +135,16 @@ export default function SchemaGenerationPage() {
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>generated.ts</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        The typed output. Import <code>ModelMap</code> as a type to get full inference on <code>orm.db</code>.
+        The primary output. Import <code>ModelMap</code> for typing, <code>schema</code> to skip
+        filesystem scanning — both from the same file.
       </p>
       <CodeBlock code={generatedTs} filename="src/schema/generated.ts" />
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>generated.json</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        The JSON schema. Pass this as the <code>schema</code> option in edge runtimes to skip all
-        filesystem reads at runtime.
+        Also produced by the generator. This is the raw data that <code>generated.ts</code> re-exports
+        as <code>schema</code>. You don&apos;t import this file directly — import <code>schema</code>
+        from <code>generated.ts</code> instead.
       </p>
       <CodeBlock code={generatedJson} language="json" filename="src/schema/generated.json" />
 
@@ -167,7 +170,7 @@ export default function SchemaGenerationPage() {
       }}>
         <strong style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Commit generated files</strong>
         <p style={{ marginTop: '0.25rem', color: 'var(--color-fg-muted)' }}>
-          Commit <code>src/schema/generated.ts</code> and <code>src/schema/generated.json</code> to version control.
+          Commit <code>src/schema/generated.ts</code> to version control.
           This ensures edge deployments always have the latest schema without needing to run the generator
           in production. Regenerate locally after any interface changes and commit the result.
         </p>

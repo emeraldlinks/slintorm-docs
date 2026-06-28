@@ -3,43 +3,39 @@ import CodeBlock from '@/components/CodeBlock';
 
 export const metadata = { title: 'Edge / Serverless — SlintORM' };
 
-const step1 = `# Step 1: Generate schema JSON at build time
+const step1 = `# Step 1: Generate schema files at build time
 # Run this in CI or before deploying — NOT at edge runtime
 
 npx slintorm generate
 # Creates: src/schema/generated.ts
 #          src/schema/generated.json`;
 
-const step2 = `// Step 2: Import the generated JSON in your edge code
-// Use the 'schema' option — no migrate() call
+const step2 = `// Step 2: Import schema from the generated file
+// schema is exported alongside ModelMap from generated.ts
 
-import schemaJson from './schema/generated.json' assert { type: 'json' };
-// or in Next.js:
-// const schemaJson = require('./schema/generated.json');`;
+import { schema } from './schema/generated';`;
 
 const step3 = `// Step 3: Initialize with schema option (no filesystem reads)
 import ORMManager from 'slintorm/browser';
+import { schema } from './schema/generated';
 
 const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
-  schema: schemaJson,   // pre-built JSON — no file scanning
-  // No 'dir' needed
-});
-
-// No orm.migrate() — schema is already applied`;
+  schema,   // pre-built — no file scanning, no migrate() needed
+});`;
 
 const nextEdgeRoute = `// app/api/users/route.ts — Next.js Edge Route Handler
 import { NextRequest, NextResponse } from 'next/server';
 import ORMManager from 'slintorm/browser';
-import schemaJson from '@/schema/generated.json';
+import { schema } from '@/schema/generated';
 
 export const runtime = 'edge';
 
 const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
-  schema: schemaJson,
+  schema,
 });
 
 const User = orm.defineModel<User>('users', 'User');
@@ -53,7 +49,7 @@ const cloudflareWorker = `// Cloudflare Worker with Hyperdrive (TCP connection p
 // workers.ts
 
 import ORMManager from 'slintorm/browser';
-import schemaJson from './schema/generated.json';
+import { schema } from './schema/generated';
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -61,7 +57,7 @@ export default {
       driver: 'postgres',
       // Use Hyperdrive connection string for Cloudflare TCP
       databaseUrl: env.HYPERDRIVE.connectionString,
-      schema: schemaJson,
+      schema,
     });
 
     const User = orm.defineModel<User>('users', 'User');
@@ -75,12 +71,12 @@ export default {
 
 const denoEdge = `// Deno Deploy
 import ORMManager from 'npm:slintorm/browser';
-import schemaJson from './schema/generated.json' assert { type: 'json' };
+import { schema } from './schema/generated';
 
 const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: Deno.env.get('DATABASE_URL')!,
-  schema: schemaJson,
+  schema,
 });`;
 
 const ciMigration = `// scripts/migrate.ts — CI/CD migration script

@@ -67,14 +67,13 @@ await orm.migrate();`;
 
 const withModelMap = `// db.ts — typed db store via ModelMap
 import ORMManager from 'slintorm';
-import type { ModelMap } from './schema/generated';
-import schema from './schema/generated.json';
+import { schema, type ModelMap } from './schema/generated';
 
 export const orm = new ORMManager<ModelMap>({
   driver: 'sqlite',
   databaseUrl: './dev.db',
   modelMap: {} as ModelMap,
-  schema,   // pre-built schema — skips filesystem scanning on startup
+  schema,   // skips filesystem scan on startup; required on edge runtimes
 });
 
 // orm.db.User.insert(...)  — fully typed
@@ -85,7 +84,7 @@ const options = [
   { key: 'databaseUrl', type: 'string', desc: 'Required. Connection string or file path.' },
   { key: 'dir', type: 'string', desc: 'Directory to scan for TypeScript interfaces. Defaults to process.cwd().' },
   { key: 'logs', type: 'boolean', desc: 'Log every SQL query to stdout. Default: false.' },
-  { key: 'schema', type: 'object', desc: 'Pre-built schema JSON imported from schema/generated.json. Optional in Node.js (ORM scans files instead), but required for edge runtimes where filesystem access is unavailable.' },
+  { key: 'schema', type: 'object', desc: 'Pre-built schema exported from schema/generated.ts. Optional in Node.js (ORM scans files instead), but required for edge runtimes where filesystem access is unavailable.' },
   { key: 'modelMap', type: 'object', desc: 'Type-only value for typing the db store. Use {} as ModelMap from generated.ts.' },
 ];
 
@@ -162,7 +161,7 @@ export default function ConfigurationPage() {
         fully-typed <code>db</code> object without manual <code>defineModel</code> exports.
       </p>
       <p style={{ marginBottom: '1rem' }}>
-        The <code>schema</code> option imports the pre-built JSON from <code>schema/generated.json</code>
+        The <code>schema</code> option imports the pre-built schema exported from <code>schema/generated.ts</code>
         and hands it directly to the ORM, skipping the filesystem scan that normally happens at startup.
         It is <strong style={{ color: 'var(--color-fg)' }}>not compulsory in Node.js</strong> — if omitted,
         SlintORM scans your <code>dir</code> at runtime instead. It becomes <strong style={{ color: 'var(--color-fg)' }}>required
