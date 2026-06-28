@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="480" height="120">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&amp;display=swap');
+    </style>
+    <!-- Glow filter for accent elements -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle inner shadow for depth -->
+    <filter id="innerShadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+      <feComposite in="blur" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadow"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0" in="shadow" result="colorShadow"/>
+      <feMerge>
+        <feMergeNode in="colorShadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Clip for the icon square -->
+    <clipPath id="iconClip">
+      <rect x="0" y="0" width="120" height="120" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ICON MARK                                  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Background tile -->
+  <rect x="0" y="0" width="120" height="120" rx="18" fill="#0F172A"/>
+  <!-- Subtle grid lines — database table feel -->
+  <rect x="0" y="0" width="120" height="120" rx="18" fill="none" stroke="#1E293B" stroke-width="0"/>
+
+  <!-- Database column slots — 5 horizontal rows, clipped to icon -->
+  <g clip-path="url(#iconClip)">
+    <!-- Row tracks — the "table" structure -->
+    <rect x="14" y="22" width="92" height="13" rx="3.5" fill="#1E293B"/>
+    <rect x="14" y="40" width="92" height="13" rx="3.5" fill="#1E293B"/>
+    <rect x="14" y="58" width="92" height="13" rx="3.5" fill="#1E293B"/>
+    <rect x="14" y="76" width="92" height="13" rx="3.5" fill="#1E293B"/>
+    <rect x="14" y="94" width="92" height="13" rx="3.5" fill="#1E293B"/>
+
+    <!-- The S-curve path — rendered as filled column segments that light up -->
+    <!-- Top-right cluster (top of S) -->
+    <rect x="46" y="22" width="60" height="13" rx="3.5" fill="#22C55E" filter="url(#glow)"/>
+    <!-- Mid-left pivot -->
+    <rect x="14" y="40" width="60" height="13" rx="3.5" fill="#22C55E" opacity="0.85"/>
+    <!-- Center bar — both sides, S waist -->
+    <rect x="14" y="58" width="92" height="13" rx="3.5" fill="#22C55E" opacity="0.65"/>
+    <!-- Mid-right pivot -->
+    <rect x="46" y="76" width="60" height="13" rx="3.5" fill="#22C55E" opacity="0.85"/>
+    <!-- Bottom-left cluster (tail of S) -->
+    <rect x="14" y="94" width="60" height="13" rx="3.5" fill="#22C55E" filter="url(#glow)"/>
+
+    <!-- Connector dots — the "active cell" indicators -->
+    <circle cx="103" cy="28.5" r="4" fill="#4ADE80"/>
+    <circle cx="71"  cy="46.5" r="4" fill="#4ADE80" opacity="0.7"/>
+    <circle cx="14"  cy="64.5" r="4" fill="#4ADE80" opacity="0.5"/>
+    <circle cx="103" cy="82.5" r="4" fill="#4ADE80" opacity="0.7"/>
+    <circle cx="71"  cy="100.5" r="4" fill="#4ADE80"/>
+  </g>
+
+  <!-- Icon border ring -->
+  <rect x="0.75" y="0.75" width="118.5" height="118.5" rx="17.25" fill="none" stroke="#2D3F57" stroke-width="1.5"/>
+
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- WORDMARK                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- "Slint" in green, "ORM" in muted — JetBrains Mono Bold -->
+  <text
+    x="144"
+    y="68"
+    font-family="'JetBrains Mono', 'Fira Code', 'Courier New', monospace"
+    font-weight="700"
+    font-size="42"
+    letter-spacing="-1.5"
+    fill="#F8FAFC"
+  >Slint<tspan fill="#22C55E">ORM</tspan></text>
+
+  <!-- Tagline -->
+  <text
+    x="145"
+    y="88"
+    font-family="'JetBrains Mono', 'Fira Code', 'Courier New', monospace"
+    font-weight="400"
+    font-size="11.5"
+    letter-spacing="1.8"
+    fill="#475569"
+  >TYPESCRIPT ORM</text>
+</svg>

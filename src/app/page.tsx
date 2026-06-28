@@ -125,6 +125,15 @@ export default function Home() {
             v1.1.4 — now with edge runtime support
           </div>
 
+          {/* Logo */}
+          <div style={{ marginBottom: '1.75rem' }}>
+            <img
+              src="/logo.svg"
+              alt="SlintORM"
+              style={{ height: '52px', display: 'inline-block' }}
+            />
+          </div>
+
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 700, lineHeight: 1.1, marginBottom: '1.25rem', letterSpacing: '-0.03em' }}>
             Zero-config TypeScript ORM.<br />
             <span style={{ color: 'var(--color-accent)' }}>Write interfaces, get a database.</span>

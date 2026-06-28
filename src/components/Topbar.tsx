@@ -45,8 +45,8 @@ export default function Topbar() {
             </svg>
           </button>
 
-          <Link href="/" style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1rem', color: 'var(--color-fg)', textDecoration: 'none' }}>
-            <span style={{ color: 'var(--color-accent)' }}>Slint</span>ORM
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img src="/logo.svg" alt="SlintORM" height="30" style={{ display: 'block' }} />
           </Link>
         </div>
 

@@ -6,10 +6,24 @@ export const metadata: Metadata = {
   title: "SlintORM — TypeScript ORM for SQLite, Postgres, MySQL, MongoDB",
   description: "Zero-config TypeScript ORM with auto-migrations, full query builder, preloads, soft delete, and edge/serverless support. Zero dependencies.",
   keywords: ["TypeScript ORM", "SQLite ORM", "PostgreSQL ORM", "auto-migration", "query builder"],
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/icon.png',
+  },
   openGraph: {
     title: "SlintORM",
     description: "Zero-config TypeScript ORM. Write interfaces, get a database.",
     type: "website",
+    images: [{ url: '/logo.png', width: 960, height: 240, alt: 'SlintORM' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SlintORM',
+    description: 'Zero-config TypeScript ORM. Write interfaces, get a database.',
+    images: ['/logo.png'],
   },
 };
 

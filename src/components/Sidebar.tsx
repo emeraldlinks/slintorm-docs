@@ -79,10 +79,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       padding: '1rem 0',
     }}>
       <div style={{ padding: '0 1rem 1rem', borderBottom: '1px solid var(--color-border)', marginBottom: '0.5rem' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }} onClick={onClose}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }} onClick={onClose}>
+          <img src="/icon.svg" alt="SlintORM" width="28" height="28" style={{ display: 'block', borderRadius: '6px' }} />
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '1.1rem',
+            fontSize: '1rem',
             fontWeight: 700,
             color: 'var(--color-fg)',
           }}>
