@@ -249,7 +249,36 @@ export default function Home() {
         borderTop: '1px solid var(--color-border)', padding: '2rem 1.5rem', textAlign: 'center',
         color: 'var(--color-fg-subtle)', fontSize: '0.875rem', fontFamily: 'var(--font-mono)',
       }}>
-        <p>SlintORM &mdash; MIT License &mdash; <a href="https://github.com/emeraldlinks/slintorm" style={{ color: 'var(--color-fg-subtle)' }}>GitHub</a> &mdash; <a href="https://www.npmjs.com/package/slintorm" style={{ color: 'var(--color-fg-subtle)' }}>npm</a></p>
+        <p style={{ marginBottom: '0.5rem' }}>
+          SlintORM &mdash; MIT License &mdash;{' '}
+          <a href="https://github.com/emeraldlinks/slintorm" style={{ color: 'var(--color-fg-subtle)' }}>GitHub</a> &mdash;{' '}
+          <a href="https://www.npmjs.com/package/slintorm" style={{ color: 'var(--color-fg-subtle)' }}>npm</a>
+        </p>
+        <p>
+          <a
+            href="/llms.txt"
+            download
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              color: 'var(--color-accent)',
+              fontSize: '0.8rem',
+              textDecoration: 'none',
+              border: '1px solid rgba(34,197,94,0.25)',
+              borderRadius: '6px',
+              padding: '0.3rem 0.75rem',
+              transition: 'background 150ms',
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            llms.txt — plain-text reference for AI models
+          </a>
+        </p>
       </footer>
     </div>
   );
