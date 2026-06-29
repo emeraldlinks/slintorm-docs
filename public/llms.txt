@@ -1,25 +1,27 @@
-# SlintORM
+# SlintORM — AI Reference
 
-> Minimal, fully-typed TypeScript ORM for Node.js, serverless functions, and V8 isolate edge runtimes (Vercel Edge, Cloudflare Workers, Deno Deploy).
+> Full plain-text reference of the SlintORM API for AI models and LLM context windows.
+> Available at: https://slintorm-docs.vercel.app/llms.txt
 
 - GitHub: https://github.com/emeraldlinks/slintorm
 - npm: https://www.npmjs.com/package/slintorm
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.1.4
+- Version: 1.1.5
 
 ---
 
-## Overview
+## What is SlintORM
 
-SlintORM is a TypeScript ORM that works across all JavaScript runtimes without additional configuration. It supports SQLite, PostgreSQL, MySQL, and MongoDB, provides a fluent query builder, automatic migrations, relation preloading, lifecycle hooks, validation, and structured error handling.
+SlintORM is a lightweight, fully-typed TypeScript ORM for SQLite, PostgreSQL, MySQL, and MongoDB. It runs in Node.js, serverless functions, and V8 isolate edge runtimes (Cloudflare Workers, Vercel Edge, Deno Deploy). It has zero runtime dependencies — all database drivers are optional peer dependencies installed only when needed.
 
-Key design goals:
-- Zero Node.js-specific imports at the module top level — safe to import in V8 isolate runtimes
-- Schema is pre-generated at build time and passed as a plain object — no filesystem access at runtime
-- All driver imports are dynamic (`import()`) so bundlers tree-shake unused drivers
-- `migrate()` is a Node-only build-step function and is never called in edge runtimes
+Key design decisions:
+- Models are plain TypeScript interfaces with annotation comments — no separate schema files
+- Migrations are derived automatically from interface definitions — no hand-written migration files
+- Schema is pre-generated at build time and passed as a plain object at runtime — no filesystem reads in edge runtimes
+- All driver imports are dynamic so bundlers tree-shake unused drivers
+- `migrate()` is a Node.js-only build-step function — never called in edge runtimes
 
 ---
 
@@ -29,568 +31,537 @@ Key design goals:
 npm install slintorm
 
 # Install only the driver you need:
-npm install pg          # PostgreSQL
-npm install mysql2      # MySQL
-npm install mongodb     # MongoDB
-npm install better-sqlite3   # SQLite (preferred, sync)
-# or
-npm install sqlite3 sqlite   # SQLite (async fallback)
+npm install better-sqlite3        # SQLite (preferred, synchronous, WAL mode)
+npm install sqlite3 sqlite        # SQLite (async fallback)
+npm install pg                    # PostgreSQL
+npm install mysql2                # MySQL / PlanetScale / TiDB
+npm install mongodb               # MongoDB
 ```
 
-All database drivers are optional peer dependencies.
+All database drivers are optional peerDependencies. SlintORM installs none of them.
 
----
-
-## Quick Start
-
-### Node.js (with migrate)
-
+For Next.js / Turbopack, add to next.config.ts:
 ```typescript
-import ORMManager from 'slintorm';
-
-const orm = new ORMManager({
-  driver: 'postgres',
-  databaseUrl: process.env.DATABASE_URL,
-  dir: 'src', // directory containing your TypeScript models
-});
-
-await orm.migrate(); // reads TypeScript files, generates schema, runs DDL
-
-const Users = await orm.defineModel<User>('user', 'User');
-const Posts = await orm.defineModel<Post>('post', 'Post');
-```
-
-### Serverless / Edge (with pre-built schema)
-
-```typescript
-// Run at build time: npx slintorm generate
-// Commit the generated file: src/schema/generated.json
-
-import ORMManager from 'slintorm';
-import schema from './src/schema/generated.json' assert { type: 'json' };
-
-const orm = new ORMManager({
-  driver: 'postgres',
-  databaseUrl: process.env.DATABASE_URL,
-  schema, // pre-built — no filesystem access needed
-});
-
-// Do NOT call orm.migrate() in edge functions
-const Users = await orm.defineModel<User>('user', 'User');
-```
-
-### Functional API
-
-```typescript
-import { createORM } from 'slintorm';
-
-const { defineModel } = await createORM({
-  driver: 'postgres',
-  databaseUrl: process.env.DATABASE_URL,
-  schema,
-});
-
-const Users = defineModel<User>('user', 'User');
-```
-
----
-
-## Configuration
-
-```typescript
-new ORMManager({
-  driver: 'postgres' | 'mysql' | 'sqlite' | 'mongodb', // required
-  databaseUrl: string,           // connection string or file path
-  databaseName: string,          // MongoDB only
-  dir: string,                   // source directory for schema generation (default: 'src')
-  logs: boolean,                 // log all SQL to console (default: false)
-  schema: Record<string, SchemaModel>, // pre-built schema for edge runtimes
-})
-```
-
----
-
-## Defining Models
-
-```typescript
-// TypeScript class/type
-type User = {
-  id?: number;
-  name: string;
-  email: string;
-  role?: string;
-  active?: boolean;
-  meta?: object;
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string; // enables soft delete when present
+const nextConfig = {
+  serverExternalPackages: ['better-sqlite3', 'sqlite3'],
 };
-
-const Users = await orm.defineModel<User>('user', 'User');
-// Registers as orm.DB.User too:
-// orm.DB.User === Users
 ```
 
 ---
 
-## CRUD Operations
+## Initialisation
 
-### insert
+### Recommended pattern (new ORMManager)
 
 ```typescript
-const user = await Users.insert({
-  name: 'Alice',
-  email: 'alice@example.com',
-  role: 'admin',
+import ORMManager from 'slintorm';
+import { schema, type ModelMap } from './schema/generated';
+
+const orm = new ORMManager<ModelMap>({
+  driver: 'sqlite',           // 'sqlite' | 'postgres' | 'mysql' | 'mongodb'
+  databaseUrl: './dev.db',    // connection string or file path
+  dir: './src',               // directory containing TypeScript model interfaces
+  logs: false,                // log SQL to stdout
+  modelMap: {} as ModelMap,   // type-only — enables typed orm.db store
+  schema,                     // pre-built schema from generated.ts (optional in Node.js, required on edge)
 });
-// Returns EntityWithUpdate<User> | null
-// createdAt and updatedAt are set automatically
+
+await orm.migrate();          // Node.js only — never call in edge runtimes
+export const db = orm.db;     // typed DBStore<ModelMap>
 ```
 
-### get
+### ORMManagerConfig — all options
 
-```typescript
-const user = await Users.get({ id: 1 });
-const user = await Users.get({ email: 'alice@example.com' });
-// Returns EntityWithUpdate<User> | null
-// Throws if filter is empty {}
+| Option      | Type                                        | Required | Description |
+|-------------|---------------------------------------------|----------|-------------|
+| driver      | 'sqlite' \| 'postgres' \| 'mysql' \| 'mongodb' | Yes  | Database driver |
+| databaseUrl | string                                      | Yes      | Connection string or file path |
+| dir         | string                                      | No       | Source directory for schema scanning (default: process.cwd()) |
+| logs        | boolean                                     | No       | Log all SQL queries to stdout (default: false) |
+| schema      | object                                      | No*      | Pre-built schema from generated.ts. Optional in Node.js, required in edge runtimes |
+| modelMap    | object                                      | No       | Type-only value for typed db store. Use {} as ModelMap |
+
+*schema is required in edge runtimes (Cloudflare Workers, Next.js Edge, Deno Deploy)
+
+### Driver-specific connection strings
+
 ```
-
-### getAll
-
-```typescript
-const users = await Users.getAll();
-// Returns User[]
-```
-
-### update
-
-```typescript
-const updated = await Users.update({ id: 1 }, { name: 'Alice Smith' });
-// Returns EntityWithUpdate<User> | null
-// updatedAt is set automatically
-// Throws if filter or data is empty
-```
-
-### delete
-
-```typescript
-await Users.delete({ id: 1 });
-// Throws if filter is empty
-```
-
-### Entity methods (on records returned by get/insert)
-
-```typescript
-const user = await Users.get({ id: 1 });
-
-// Update via entity — uses primary key, not original filter
-await user.update({ name: 'Bob' });
-
-// Refresh — returns latest from DB using primary key
-const fresh = await user.refresh();
-// NOTE: refresh() uses the primary key (not the original filter)
-// so it works correctly after updating non-PK fields
-
-// Delete via entity
-await user.delete();
-
-// Serialize
-const plain = user.toJSON();
+SQLite:    ./path/to/file.db   or   :memory:
+Postgres:  postgresql://user:pass@host:5432/database
+MySQL:     mysql://user:pass@host:3306/database
+MongoDB:   mongodb://user:pass@host:27017/database
+           mongodb+srv://user:pass@cluster.mongodb.net/database
 ```
 
 ---
 
-## Bulk Operations
+## Model Definitions
+
+Models are plain TypeScript interfaces. Annotations in `// comment` lines above each field control column types, constraints, and relations.
 
 ```typescript
-// Insert multiple rows in a single transaction
-const count = await Users.insertMany([
-  { name: 'Alice', email: 'alice@example.com' },
-  { name: 'Bob',   email: 'bob@example.com'   },
+interface User {
+  id: number;                   // @auto @primaryKey
+  // @unique
+  email: string;
+  name: string;
+  // @nullable
+  bio: string;
+  // @default:user
+  role: string;
+  // @length:500
+  summary: string;
+  // @json
+  settings: Record<string, unknown>;
+  // @enum:(pending,active,banned)
+  status: string;
+  // @index
+  teamId: number;
+  // @softDelete
+  deletedAt: string;
+  createdAt: string;            // injected automatically
+  updatedAt: string;            // injected automatically
+}
+```
+
+### Field annotation reference — all supported tags
+
+| Annotation        | SQL effect |
+|-------------------|------------|
+| @auto             | AUTOINCREMENT / SERIAL |
+| @primaryKey       | PRIMARY KEY |
+| @unique           | UNIQUE constraint |
+| @index            | CREATE INDEX |
+| @nullable         | allows NULL |
+| @not null         | NOT NULL constraint (explicit) |
+| @length:N         | VARCHAR(N) |
+| @json             | TEXT column, auto JSON.stringify/parse |
+| @softDelete       | marks deletedAt — queries auto-filter WHERE deletedAt IS NULL |
+| @enum:(a,b,c)     | CHECK constraint (SQLite/Postgres) or ENUM type (MySQL) |
+| @default:value    | DEFAULT value |
+| @comment:text     | column comment (MySQL/Postgres) |
+| @relation ...     | declares a relation (see Relations section) |
+| @relationship ... | alias for @relation |
+
+Annotations placed on the line directly above the field. Both `@`-prefixed and bare variants are accepted.
+
+### Automatic columns
+
+Every table gets `createdAt` and `updatedAt` automatically. `deletedAt` is added only when a field is annotated with `@softDelete`.
+
+---
+
+## defineModel
+
+```typescript
+// Signature
+orm.defineModel<T>(table: string, modelName: string, hooks?: ModelHooks<T>): ModelAPI<T>
+
+// Examples
+const User = orm.defineModel<User>('users', 'User');
+const Post = orm.defineModel<Post>('posts', 'Post', {
+  async onCreateBefore(data) {
+    return { ...data, slug: data.title.toLowerCase().replace(/\s+/g, '-') };
+  },
+});
+```
+
+---
+
+## ModelAPI — all 24 methods
+
+Every model returned by `defineModel` has these methods:
+
+### Mutations
+
+```typescript
+// insert(data) — returns EntityWithUpdate<T>
+const user = await User.insert({ email: 'joe@example.com', name: 'Joe' });
+
+// insertMany(data[]) — batch insert, single transaction on SQLite
+await User.insertMany([
+  { email: 'a@a.com', name: 'Alice' },
+  { email: 'b@b.com', name: 'Bob' },
 ]);
-// Returns number of rows inserted
 
-// Update multiple rows matching filter
-const changes = await Users.updateMany({ role: 'guest' }, { role: 'user' });
-// Returns number of affected rows
+// update(filter, data) — returns number of affected rows
+await User.update({ id: 1 }, { name: 'Joseph' });
 
-// Delete multiple rows matching filter
-const deleted = await Users.deleteMany({ active: false });
-// Returns number of deleted rows
+// updateMany(filter, data) — returns number of affected rows
+await User.updateMany({ role: 'guest' }, { role: 'user' });
 
-// Delete all rows
-await Users.truncate();
+// delete(filter) — hard delete or soft delete if @softDelete present
+await User.delete({ id: 1 });
+
+// deleteMany(filter) — returns number of rows deleted
+await User.deleteMany({ active: false });
+
+// upsert(data, conflictKey) — insert or update on conflict
+await User.upsert({ email: 'joe@example.com', name: 'Joe' }, 'email');
+// Postgres: ON CONFLICT (email) DO UPDATE
+// MySQL: ON DUPLICATE KEY UPDATE
+// SQLite/MongoDB: manual get-then-insert-or-update
+
+// truncate() — delete ALL rows
+await User.truncate();
+
+// restore(filter) — un-soft-delete: sets deletedAt = NULL
+await User.restore({ id: 1 });
 ```
 
----
-
-## Aggregates
+### Reads
 
 ```typescript
-const total  = await Users.count();
-const active = await Users.count({ role: 'admin' });
+// get(filter) — returns EntityWithUpdate<T> | null
+const user = await User.get({ email: 'joe@example.com' });
 
-const maxAge = await Users.max('age');
-const minAge = await Users.min('age');
-const avgAge = await Users.avg('age');
-const sumAge = await Users.sum('age');
+// getAll(filter?) — returns EntityWithUpdate<T>[]
+const users = await User.getAll();
+const admins = await User.getAll({ role: 'admin' });
 
-// With filter
-const avgAdminAge = await Users.avg('age', { role: 'admin' });
-```
-
----
-
-## Upsert and findOrCreate
-
-```typescript
-// Insert or update
-const result = await Users.upsert(
-  { email: 'alice@example.com' },     // match filter
-  { email: 'alice@example.com', name: 'Alice' } // full data
+// findOrCreate(filter, defaults?) — returns { record, created }
+const { record, created } = await User.findOrCreate(
+  { email: 'joe@example.com' },
+  { name: 'Joe', role: 'user' }
 );
-// Returns 'inserted' | 'updated'
 
-// Find or create
-const { record, created } = await Users.findOrCreate(
-  { email: 'alice@example.com' },     // match filter
-  { email: 'alice@example.com', name: 'Alice' } // defaults if creating
-);
-// created: boolean
+// exists(filter) — returns boolean
+const taken = await User.exists({ email: 'joe@example.com' });
+
+// count(filter?) — returns number
+const total = await User.count();
+const admins = await User.count({ role: 'admin' });
+```
+
+### Scalar aggregates
+
+```typescript
+// All accept optional filter as second argument
+const total = await Order.sum('amount');
+const avg   = await Review.avg('rating', { productId: 7 });
+const min   = await Event.min('startDate');
+const max   = await Event.max('endDate');
+```
+
+### Validation
+
+```typescript
+// validate(data, rules) — throws ValidationError on failure
+await User.validate(data, rules);
+
+// check(data, rules) — returns Record<string, string> | null
+const errors = await User.check(data, rules);
+```
+
+### Query builder entry points
+
+```typescript
+model.query()      // QueryBuilder<T> — base builder
+model.advanced()   // AdvancedQueryBuilder<T> — aggregates, window functions, UNION
+model.softDelete() // SoftDeleteQueryBuilder<T> — withTrashed, onlyTrashed
+model.extended()   // ExtendedQueryBuilder<T> — scope()
 ```
 
 ---
 
-## exists
+## EntityWithUpdate
+
+Every row returned by `get()`, `insert()`, or `findOrCreate()` is an `EntityWithUpdate<T>`:
 
 ```typescript
-const exists = await Users.exists({ email: 'alice@example.com' });
-// Returns boolean
+const user = await User.get({ id: 1 });
+
+await user.update({ name: 'Bob' });         // update in DB, returns EntityWithUpdate<T>
+await user.delete();                         // delete from DB
+const fresh = await user.refresh();          // re-fetch from DB by primary key
+const plain = user.toJSON();                 // plain object — no ORM methods
 ```
 
 ---
 
 ## Query Builder
 
-Access via `model.query()`. All methods are chainable. Call `.get()` or `.first()` to execute.
+All methods are chainable. No query fires until a terminal method is called.
 
-### Basic filters
+### Terminal methods
 
 ```typescript
-// Equality
-Users.query().where('role', '=', 'admin').get()
+// .get() — execute, returns EntityWithUpdate<T>[]
+await User.query().where('active', '=', true).get();
 
-// Comparison operators: = | != | < | <= | > | >= | LIKE | ILIKE | IN | NOT IN
-Users.query().where('age', '>', 18).get()
-Users.query().where('name', 'LIKE', 'Ali%').get()
+// .first(condition?) — execute, returns EntityWithUpdate<T> | null
+await User.query().orderBy('createdAt', 'DESC').first();
+await User.query().first({ role: 'admin' });      // partial filter object
+await User.query().first('role = "admin"');        // raw SQL string
 
-// OR condition
-Users.query()
-  .where('role', '=', 'admin')
-  .orWhere('role', '=', 'moderator')
-  .get()
-
-// Raw WHERE with params (e.g. for subqueries)
-// IMPORTANT: always pass params array to avoid them being silently dropped
-Users.query().whereRaw('"age" > ?', [18]).get()
-
-// IN / NOT IN
-Users.query().whereIn('role', ['admin', 'moderator']).get()
-Users.query().whereNotIn('status', ['banned', 'deleted']).get()
-
-// NULL checks
-Users.query().whereNull('deletedAt').get()
-Users.query().whereNotNull('verifiedAt').get()
-
-// BETWEEN
-Users.query().whereBetween('age', 18, 65).get()
-
-// Case-insensitive LIKE (emulated on SQLite, native ILIKE on Postgres)
-Users.query().ILike('name', 'alice').get()
-// Matches 'alice', 'Alice', 'ALICE' etc.
+// .getPaginated(page, perPage) — returns { data, total, page, lastPage }
+const result = await Post.query().getPaginated(1, 20);
+result.data      // Post[]
+result.total     // total matching rows
+result.page      // current page
+result.lastPage  // Math.ceil(total / perPage)
 ```
 
-### Column selection and projection
+### SELECT
 
 ```typescript
-Users.query().select('id', 'name', 'email').get()
-
-Users.query().distinct('role').get()
-Users.query().distinct().select('role', 'status').get()
-
-// Exclude specific columns
-Users.query().exclude('password', 'secret').get()
-
-// Exclude nested relation fields (used with preload)
-Users.query().preload('posts').exclude('posts.internalNote').get()
+.select('id', 'name', 'email')              // pick columns
+.exclude('password')                         // strip column from result
+.exclude('user.password')                   // strip from preloaded relation
 ```
 
-### Sorting, pagination
+### WHERE
 
 ```typescript
-Users.query().orderBy('createdAt', 'desc').get()
-Users.query().orderBy('name', 'asc').limit(10).get()
-Users.query().limit(10).offset(20).get()
+// Operators: = | != | < | <= | > | >= | LIKE | ILIKE
+.where('role', '=', 'admin')
+.where('age', '>', 18)
+.where('name', 'LIKE', 'Jo%')
 
-// Paginate — page is 1-indexed
-Users.query().paginate(2, 10).get() // page 2, 10 per page
+.orWhere('role', '=', 'moderator')          // OR connector
 
-// getPaginated — returns { data, total, page, lastPage }
-const result = await Users.query()
-  .where('active', '=', true)
-  .getPaginated(1, 20);
-// result.data: User[]
-// result.total: number
-// result.page: number
-// result.lastPage: number
+.whereRaw('LOWER(email) = ?', ['joe@example.com'])  // parameterized raw SQL
+
+.whereIn('role', ['admin', 'moderator'])
+.whereNotIn('status', ['banned', 'deleted'])
+
+.whereNull('deletedAt')
+.whereNotNull('verifiedAt')
+
+.whereBetween('age', 18, 65)
+
+.ILike('name', '%alice%')                   // case-insensitive LIKE
+// SQLite: LIKE  |  Postgres: ILIKE  |  MySQL: LIKE
 ```
 
-### first()
+### ORDER, LIMIT, OFFSET
 
 ```typescript
-const user = await Users.query().where('role', '=', 'admin').first()
-// Returns T | null
-
-// With inline condition object
-const user = await Users.query().first({ email: 'alice@example.com' })
-
-// With raw SQL condition
-const user = await Users.query().first('"createdAt" > \'2024-01-01\'')
+.orderBy('createdAt', 'DESC')
+.orderBy('name', 'ASC')                     // multiple orderBy — applied in order
+.limit(20)
+.offset(40)
+.paginate(3, 20)                            // page 3, 20 per page (shorthand)
 ```
 
-### Aggregates in query builder
-
-These add aggregate columns to the SELECT — they do NOT return a number directly. Chain `.get()` to get rows with the computed column. For a plain number use `model.count()` / `model.sum()` etc.
+### JOINS
 
 ```typescript
-Users.query().countAggregate('id').get()
-// [{ 'COUNT(id)': 5 }]
+.join('users', 'posts.userId', '=', 'users.id')           // INNER JOIN
+.leftJoin('users', 'posts.userId', '=', 'users.id')       // LEFT JOIN
 
-Sales.query()
-  .select('region')
-  .sum('amount')
-  .groupBy('region')
-  .get()
-// [{ region: 'North', 'SUM(amount)': 1200 }, ...]
-
-Sales.query()
-  .select('region')
-  .sum('amount')
-  .groupBy('region')
-  .having('SUM(amount) > 1000')
-  .get()
-
-// Other aggregates
-Users.query().avg('age').get()
-Users.query().min('score').get()
-Users.query().max('score').get()
+// Via advanced():
+.rightJoin('users', 'posts.userId', '=', 'users.id')      // RIGHT JOIN
+.fullOuterJoin('users', 'posts.userId', '=', 'users.id')  // FULL OUTER JOIN
 ```
 
-### Window functions
+When joins are active and no `.select()` is called, SlintORM auto-qualifies to `table.*` to avoid ambiguous column errors.
+
+### PRELOADS (eager loading, no N+1)
 
 ```typescript
-Users.query()
-  .window('ROW_NUMBER()', 'PARTITION BY department ORDER BY salary DESC')
-  .get()
-// Adds a window column to each row result
+.preload('user')                    // load manytoone relation
+.preload('posts')                   // load onetomany relation
+.preload('profile')                 // load onetoone relation
+.preload('teams')                   // load manytomany relation
+.preload('posts.comments')          // nested preload
+.preload('posts.comments.user')     // any depth
+.exclude('user.password')           // strip field from preloaded relation
 ```
 
-### JOINs
+All preloads are batch-fetched with a single `WHERE id IN (...)` query — not per-row. Cycle detection is built in.
+
+### AGGREGATES (via model.advanced())
 
 ```typescript
-// 4-argument signature: (table, leftCol, operator, rightCol)
-Posts.query()
-  .join('users', 'posts.userId', '=', 'users.id')
-  .where('users.name', '=', 'Alice')  // dotted table.col refs work correctly
-  .get()
-
-Posts.query()
-  .leftJoin('users', 'posts.userId', '=', 'users.id')
-  .get()
-
-Posts.query()
-  .rightJoin('categories', 'posts.categoryId', '=', 'categories.id')
-  .get()
-
-Posts.query()
-  .fullOuterJoin('comments', 'posts.id', '=', 'comments.postId')
-  .get()
+.countAggregate()                   // adds COUNT(*) AS count to SELECT
+.sum('amount')                      // adds SUM(amount) to SELECT
+.avg('rating')                      // adds AVG(rating) to SELECT
+.min('price')                       // adds MIN(price) to SELECT
+.max('price')                       // adds MAX(price) to SELECT
+.groupBy('userId', 'status')
+.having('COUNT(*) > ?', [5])        // filter on aggregated result
+.distinct('role')                   // SELECT DISTINCT
+.window('ROW_NUMBER()', 'PARTITION BY userId ORDER BY createdAt DESC')
 ```
 
-### Subqueries
+### SUBQUERIES (via model.advanced())
 
 ```typescript
-// Subquery in whereRaw — always pass the subquery params
-const activeSub = Users.query().select('id').where('active', '=', true);
-const { sql, params } = activeSub.buildSql();
-Posts.query().whereRaw(`"userId" IN (${sql})`, params).get()
+.selectSubquery('SELECT COUNT(*) FROM comments WHERE postId = posts.id', 'commentCount')
+.exists('SELECT 1 FROM posts WHERE posts.userId = users.id')
+.notExists('SELECT 1 FROM posts WHERE posts.userId = users.id')
 
-// Subquery as a selected column
-Posts.query()
-  .selectSubquery(
-    Comments.query().countAggregate('id'),
-    'commentCount'
-  )
-  .get()
-
-// EXISTS / NOT EXISTS
-Posts.query()
-  .exists(Comments.query().where('postId', '=', 1))
-  .get()
-
-Posts.query()
-  .notExists(Reports.query().where('postId', '=', 1))
-  .get()
-
-// UNION
-const sql = AdvancedQueryBuilder.union([
-  Users.query().where('role', '=', 'admin'),
-  Users.query().where('role', '=', 'moderator'),
-])
-// Returns combined SQL string; execute manually with model.raw()
+// Static UNION
+AdvancedQueryBuilder.union([query1, query2])       // UNION
+AdvancedQueryBuilder.union([query1, query2], true) // UNION ALL
 ```
 
-### Scopes
+### RELATION TRAVERSAL
 
 ```typescript
-// Define reusable query fragments
-const activeScope   = (qb) => qb.where('active', '=', true);
-const adminScope    = (qb) => qb.where('role', '=', 'admin');
+// throughRelation — auto-generates JOINs from schema annotations
+.throughRelation('enrollment.student')
 
-Users.query()
-  .scope(activeScope)
-  .scope(adminScope)
-  .get()
+// whereRelated — explicit path + IN subquery
+.whereRelated('enrollment.student', 'id', 42)
+
+// relatedTo — BFS finds the shortest path automatically
+.relatedTo('Student', 'id', 42)
 ```
 
-### Relation traversal in WHERE
+### SOFT DELETE (via model.softDelete())
 
 ```typescript
-// whereRelated(relationFieldName, column, value)
-// Resolves to an IN subquery — no JOIN required
-Posts.query().whereRelated('user', 'name', 'Alice').get()
-// Finds all posts whose user.name = 'Alice'
-
-// relatedTo(targetModelName, column, value)
-// Auto-discovers the relation path via BFS
-Posts.query().relatedTo('User', 'role', 'admin').get()
+.withTrashed()     // include soft-deleted rows (removes WHERE deletedAt IS NULL)
+.onlyTrashed()     // only soft-deleted rows (WHERE deletedAt IS NOT NULL)
 ```
 
-### Joining through relations
+### SCOPES (via model.extended())
 
 ```typescript
-// throughRelation adds the necessary JOINs based on schema relations
-Posts.query()
-  .throughRelation('user')
-  .select('posts.id', 'posts.title', 'users.name')
-  .get()
+// ExtendedQueryBuilder inherits ALL base QueryBuilder methods plus scope()
+.scope(q => q.where('active', '=', true))    // lazy — runs before buildSql()
+
+// Named scope pattern
+const activeScope = (q: ExtendedQueryBuilder<any>) => q.where('active', '=', true);
+User.extended().scope(activeScope).scope(adminScope).get();
+```
+
+---
+
+## Dialect differences (auto-handled)
+
+| Feature          | SQLite                    | Postgres              | MySQL                      | MongoDB         |
+|------------------|---------------------------|-----------------------|----------------------------|-----------------|
+| Placeholders     | ?                         | $1, $2, $3            | ?                          | JSON protocol   |
+| Identifiers      | unquoted / "double"       | "double-quoted"       | \`backtick\`               | field names     |
+| Upsert           | INSERT OR REPLACE         | ON CONFLICT DO UPDATE | ON DUPLICATE KEY UPDATE    | manual          |
+| ILIKE            | LIKE (case-insensitive)   | native ILIKE          | LIKE (collation-dependent) | regex           |
+| RETURNING        | yes                       | yes                   | no                         | no              |
+| Transactions     | yes                       | yes                   | yes                        | no              |
+| FULL OUTER JOIN  | no                        | yes                   | no                         | no              |
+| Window functions | limited                   | full                  | full                       | no              |
+
+---
+
+## Relations
+
+Declared in `// comment` annotations. Both `@relation` and `@relationship` are accepted.
+
+### Annotation syntax
+
+```
+@relation <kind>:<ModelName>;foreignKey:<col>[;relatedKey:<col>][;through:<table>][;onDelete:CASCADE|SET NULL]
+```
+
+### One-to-Many
+
+```typescript
+interface User {
+  // @relation onetomany:Post;foreignKey:userId
+  posts?: Post[];
+}
+interface Post {
+  userId: number;
+  // @relation manytoone:User;foreignKey:userId
+  user?: User;
+}
+```
+
+### One-to-One
+
+```typescript
+interface User {
+  // @relationship onetoone:Profile;foreignKey:userId
+  profile?: Profile;
+}
+interface Profile {
+  // @unique
+  userId: number;
+  // @relationship onetoone:User;foreignKey:userId;onDelete:CASCADE
+  user?: User;
+}
+```
+
+### Many-to-Many
+
+```typescript
+interface User {
+  // @relation manytomany:Team;through:team_members;foreignKey:userId;relatedKey:teamId
+  teams?: Team[];
+}
+interface Team {
+  // @relation manytomany:User;through:team_members;foreignKey:teamId;relatedKey:userId
+  members?: User[];
+}
+// Pivot table team_members(userId, teamId) auto-created by migrate()
 ```
 
 ---
 
 ## Soft Delete
 
-Add a `deletedAt` field to your model schema. The query builder automatically excludes soft-deleted rows unless you opt in.
-
 ```typescript
-type Post = {
-  id?: number;
-  title: string;
-  deletedAt?: string | null; // presence enables soft delete
-};
+interface User {
+  // @softDelete
+  deletedAt: string;
+}
 
-// Default: excludes deleted rows
-Posts.query().get()
+// Standard queries auto-filter: WHERE deletedAt IS NULL
+await User.getAll();              // excludes deleted rows
+
+// Soft delete — sets deletedAt timestamp, does not remove row
+await User.delete({ id: 1 });
+
+// Restore — sets deletedAt = NULL
+await User.restore({ id: 1 });
 
 // Include deleted rows
-Posts.query().withTrashed().get()
+await User.softDelete().withTrashed().get();
 
 // Only deleted rows
-Posts.query().onlyTrashed().get()
-
-// Soft-delete (set deletedAt)
-await Posts.update({ id: 1 }, { deletedAt: new Date().toISOString() });
-
-// Restore (clear deletedAt)
-await Posts.restore({ id: 1 });
-```
-
----
-
-## Relation Preloading
-
-Define relations in your schema. Then use `.preload()` on the query builder.
-
-### Relation kinds
-
-- `onetomany` — parent has many children (foreignKey on child)
-- `manytoone` — child belongs to parent (foreignKey on child)
-- `onetoone` — one record linked to one other
-- `manytomany` — linked through a pivot table
-
-### Examples
-
-```typescript
-// onetomany
-const users = await Users.query().preload('posts').get();
-// users[0].posts = Post[]
-
-// manytoone
-const posts = await Posts.query().preload('user').get();
-// posts[0].user = User | null
-
-// onetoone
-const users = await Users.query().preload('profile').get();
-// users[0].profile = Profile | null
-
-// manytomany
-const users = await Users.query().preload('tags').get();
-// users[0].tags = Tag[]
-
-// Nested preload
-const users = await Users.query().preload('posts.comments').get();
-// users[0].posts[0].comments = Comment[]
-
-// Combine preloads
-const users = await Users.query()
-  .preload('posts')
-  .preload('profile')
-  .get();
-
-// Exclude nested fields
-const users = await Users.query()
-  .preload('posts')
-  .exclude('posts.internalNote', 'posts.draft')
-  .get();
+await User.softDelete().onlyTrashed().get();
 ```
 
 ---
 
 ## Lifecycle Hooks
 
+All 6 hooks, all async-capable. onCreateBefore and onUpdateBefore mutate data by returning a new value.
+
 ```typescript
-const Users = await orm.defineModel<User>('user', 'User', {
-  onCreateBefore: async (item) => {
-    // Transform item before insert; return modified item or void
-    return { ...item, name: item.name.trim() };
+const User = orm.defineModel<User>('users', 'User', {
+  // Runs before INSERT — return value replaces data
+  async onCreateBefore(data: User): Promise<User | void> {
+    return { ...data, email: data.email.toLowerCase() };
   },
-  onCreateAfter: async (item) => {
-    // item is the fully inserted record
+
+  // Runs after INSERT with the created row
+  async onCreateAfter(item: User): Promise<void> {
     await sendWelcomeEmail(item.email);
   },
-  onUpdateBefore: async (oldData, newData) => {
-    // Return modified newData or void
-    return { ...newData, updatedBy: currentUserId };
+
+  // Runs before UPDATE — return value replaces newData
+  async onUpdateBefore(oldData: User, newData: Partial<User>): Promise<Partial<User> | void> {
+    if (newData.password) {
+      return { ...newData, password: await bcrypt.hash(newData.password, 12) };
+    }
   },
-  onUpdateAfter: async (oldData, newData) => {
-    await auditLog('update', oldData, newData);
+
+  // Runs after UPDATE
+  async onUpdateAfter(oldData: User, newData: Partial<User>): Promise<void> {
+    await auditLog(oldData, newData);
   },
-  onDeleteBefore: async (record) => {
-    await archiveRecord(record);
+
+  // Runs before DELETE
+  onDeleteBefore(deleted: User): void {
+    console.log('Deleting:', deleted.id);
   },
-  onDeleteAfter: async (record) => {
-    await clearCache(record.id);
+
+  // Runs after DELETE
+  onDeleteAfter(deleted: User): void {
+    clearCache(deleted.id);
   },
 });
 ```
@@ -600,266 +571,379 @@ const Users = await orm.defineModel<User>('user', 'User', {
 ## Validation
 
 ```typescript
+// FieldRules<T> — all supported rules
 const rules = {
-  email: {
-    required: true,
-    email: true,           // must match email format
-  },
-  name: {
-    required: true,
-    minLength: 2,
-    maxLength: 100,
-  },
-  age: {
-    min: 0,
-    max: 120,
-  },
-  username: {
-    match: /^[a-z0-9_]+$/,
-    custom: (value, row) => {
-      if (value === 'admin') return 'Username "admin" is reserved';
-    },
+  email:    { required: true, email: true },
+  name:     { required: true, minLength: 2, maxLength: 100 },
+  age:      { min: 0, max: 120 },
+  username: { match: /^[a-z0-9_]+$/ },
+  code:     {
+    custom: async (value, row) => {
+      const valid = await Promo.exists({ code: value });
+      return valid ? null : 'Invalid promo code';
+    }
   },
 };
 
-// Throws ValidationError
-Users.validate(data, rules);
-
-// Returns errors object or null (does not throw)
-const errors = Users.check(data, rules);
-if (errors) {
-  console.log(errors); // { email: 'email must be a valid email', ... }
-}
-```
-
-```typescript
-import { ValidationError } from 'slintorm';
-
+// validate() — throws ValidationError
 try {
-  Users.validate(data, rules);
+  await User.validate(data, rules);
 } catch (err) {
   if (err instanceof ValidationError) {
-    console.log(err.errors); // Record<string, string>
+    err.message  // 'Validation failed'
+    err.errors   // { email: 'Invalid email', name: 'Min length is 2' }
   }
 }
+
+// check() — returns error map or null
+const errors = await User.check(data, rules);
+if (errors) return res.status(422).json({ errors });
 ```
+
+### Rule reference
+
+| Rule      | Type                                    | Description |
+|-----------|-----------------------------------------|-------------|
+| required  | boolean                                 | Must be present and non-empty |
+| email     | boolean                                 | Must match email pattern |
+| minLength | number                                  | String min length |
+| maxLength | number                                  | String max length |
+| min       | number                                  | Numeric minimum |
+| max       | number                                  | Numeric maximum |
+| match     | RegExp                                  | Must match regex |
+| custom    | (value, row) => string \| null          | Custom validator, async supported |
 
 ---
 
 ## Error Handling
 
-All constraint violations are wrapped in `ORMError` with structured metadata.
+All constraint violations normalized into ORMError with typed codes.
 
 ```typescript
-import { ORMError } from 'slintorm';
+import { ORMError, ORMErrorCode } from 'slintorm';
 
 try {
-  await Users.insert({ email: 'existing@example.com', name: 'Alice' });
+  await User.insert({ email: 'duplicate@example.com' });
 } catch (err) {
   if (err instanceof ORMError) {
-    err.ormCode  // 'UNIQUE_VIOLATION' | 'NOT_NULL_VIOLATION' | 'FOREIGN_KEY_VIOLATION' | 'CHECK_VIOLATION'
-    err.message  // Human-readable explanation + tip
-    err.table    // Table name (if parseable)
-    err.column   // Column name (if parseable)
-    err.value    // Conflicting value (if parseable)
-    err.original // Original driver error
+    err.ormCode   // ORMErrorCode value
+    err.table     // affected table
+    err.column    // affected column
+    err.value     // value that caused violation
+    err.sql       // SQL that was executed
+    err.params    // bound parameters
+    err.original  // original driver error
   }
 }
 ```
 
-Error codes:
-- `UNIQUE_VIOLATION` — duplicate value in a unique/primary key column
-- `NOT_NULL_VIOLATION` — null provided for a NOT NULL column
-- `FOREIGN_KEY_VIOLATION` — referenced record does not exist
-- `CHECK_VIOLATION` — value rejected by a CHECK constraint
+### ORMErrorCode values
 
-Works across SQLite, Postgres, and MySQL.
+| Code                  | SQLite                        | Postgres | MySQL                   |
+|-----------------------|-------------------------------|----------|-------------------------|
+| UNIQUE_VIOLATION      | UNIQUE constraint failed      | 23505    | ER_DUP_ENTRY            |
+| NOT_NULL_VIOLATION    | NOT NULL constraint failed    | 23502    | ER_BAD_NULL_ERROR       |
+| FOREIGN_KEY_VIOLATION | FOREIGN KEY constraint failed | 23503    | ER_NO_REFERENCED_ROW_2  |
+| CHECK_VIOLATION       | CHECK constraint failed       | 23514    | ER_CHECK_CONSTRAINT_VIOLATED |
+| UNKNOWN_CONSTRAINT    | other constraint errors       | other    | other                   |
 
 ---
 
 ## Transactions
 
 ```typescript
+// orm.transaction() — BEGIN / COMMIT / ROLLBACK auto-managed
 await orm.transaction(async (trx) => {
-  await trx.exec('INSERT INTO "orders" ("userId","total") VALUES (?,?)', [1, 99.99]);
-  await trx.exec('UPDATE "users" SET "balance" = "balance" - ? WHERE "id" = ?', [99.99, 1]);
-  // Automatically committed on success, rolled back on throw
+  await trx.User.update({ id: fromId }, { balance: fromBal - amount });
+  await trx.User.update({ id: toId },   { balance: toBal + amount });
+  // Any throw -> automatic ROLLBACK
 });
 
-// batch — executes multiple statements in one transaction
+// orm.batch() — flat statement list, single transaction
 await orm.batch([
-  { sql: 'INSERT INTO "log" ("message") VALUES (?)', params: ['started'] },
-  { sql: 'UPDATE "jobs" SET "status" = ? WHERE "id" = ?', params: ['done', 42] },
+  { sql: 'INSERT INTO tags (name) VALUES (?)', params: ['typescript'] },
+  { sql: 'UPDATE posts SET tagCount = tagCount + 1 WHERE id = ?', params: [postId] },
 ]);
 ```
+
+MongoDB note: `orm.transaction()` is a no-op on MongoDB. Use the MongoDB driver session API for atomic multi-document operations.
 
 ---
 
 ## Migrations
 
-Migrations are a Node.js build-step — never run in edge/serverless functions.
+Node.js only — never run in edge runtimes.
 
 ```typescript
-// In a Node.js script (e.g. scripts/migrate.ts)
-const orm = new ORMManager({ driver: 'postgres', databaseUrl, dir: 'src' });
-await orm.migrate();
-// Reads TypeScript model files in src/
-// Generates src/schema/generated.json
-// Creates/alters tables as needed
-process.exit(0);
-```
-
-```json
-// package.json
-{
-  "scripts": {
-    "migrate": "tsx scripts/migrate.ts",
-    "build": "npm run migrate && next build"
-  }
-}
-```
-
-For edge runtimes, generate the schema separately:
-
-```bash
-npx slintorm generate
-```
-
-Then import and pass it:
-
-```typescript
-import schema from './src/schema/generated.json' assert { type: 'json' };
-const orm = new ORMManager({ driver: 'postgres', databaseUrl, schema });
-```
-
----
-
-## Serverless & Edge Runtime Support
-
-| Feature | Node.js | Vercel Serverless | Vercel Edge | Cloudflare Workers | Deno |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Postgres driver | ✅ | ✅ | ✅ | ✅* | ✅ |
-| MySQL driver | ✅ | ✅ | ✅ | ✅* | ✅ |
-| MongoDB driver | ✅ | ✅ | ⚠️ | ⚠️ | ✅ |
-| SQLite driver | ✅ | ✅ | ❌ | ❌ | ✅ |
-| orm.migrate() | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Pre-built schema | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-\* Requires a TCP-compatible connection pooler (e.g. Cloudflare Hyperdrive or Neon serverless driver).
-
-### Edge example (Next.js App Router)
-
-```typescript
-// app/api/users/route.ts
-export const runtime = 'edge';
-
 import ORMManager from 'slintorm';
-import schema from '@/src/schema/generated.json' assert { type: 'json' };
 
 const orm = new ORMManager({
   driver: 'postgres',
   databaseUrl: process.env.DATABASE_URL!,
-  schema,
+  dir: './src',
 });
 
-const Users = await orm.defineModel('user', 'User');
-
-export async function GET() {
-  const users = await Users.query()
-    .where('active', '=', true)
-    .orderBy('createdAt', 'desc')
-    .limit(20)
-    .get();
-  return Response.json(users);
-}
+await orm.migrate();
+// Scans ./src for TypeScript interface definitions
+// Generates src/schema/generated.ts
+// Creates/alters tables non-destructively
+// Tracks changes in _slint_migrations table
 ```
 
----
-
-## TypeScript Types
+### Migration hooks
 
 ```typescript
-import ORMManager, {
-  createORM,
-  type ORMManagerConfig,
-  type ModelHooks,
-  type AnyModelMap,
-  type DBStore,
-  type ReadonlyDBStore,
-} from 'slintorm';
-
-import { type ModelAPI }      from 'slintorm/model';
-import { ORMError }           from 'slintorm/db-error';
-import { ValidationError }    from 'slintorm/extensions';
-
-// EntityWithUpdate<T> — return type of get() and insert()
-// Adds .update(), .delete(), .refresh(), .toJSON() to T
-import type { EntityWithUpdate } from 'slintorm/types';
+await orm.migrate({
+  onPending(units)      { console.log(`${units.length} pending`) },
+  onProgress(unit)      { console.log(`Running: ${unit.name}`) },
+  onDone(result)        { console.log(`Done. ${result.ran} applied.`) },
+  onError(unit, err)    { console.error(`Failed: ${unit.name}`, err) },
+});
 ```
 
----
+### _slint_migrations tracking table schema
 
-## Runtime Errors
+```sql
+-- SQLite / MySQL
+CREATE TABLE _slint_migrations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  batch INTEGER NOT NULL,
+  hash TEXT NOT NULL,
+  snapshot TEXT,
+  migratedAt TEXT NOT NULL
+);
 
-| Error | Cause | Fix |
-|---|---|---|
-| `ORMError: Duplicate value` | UNIQUE constraint | Check unique fields before insert or use `upsert()` |
-| `ORMError: Missing required value` | NOT NULL constraint | Ensure all required fields are provided |
-| `ORMError: Invalid reference` | FOREIGN KEY constraint | Insert the referenced record first |
-| `ValidationError` | `validate()` failed | Check `err.errors` for field-level messages |
-| `Error: Filter must contain at least one field` | `get({})` / `delete({})` | Always provide at least one filter field |
-| `Error: No SQLite driver found` | SQLite packages not installed | `npm install better-sqlite3` or `npm install sqlite3 sqlite` |
-| `Error: SlintORM: cannot load schema from disk` | Edge runtime, no schema passed | Pass `schema` option with pre-built JSON |
+-- Postgres
+CREATE TABLE _slint_migrations (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  batch INTEGER NOT NULL,
+  hash TEXT NOT NULL,
+  snapshot TEXT,
+  migratedAt TEXT NOT NULL
+);
+```
 
 ---
 
 ## CLI
 
 ```bash
-# Generate schema JSON from TypeScript model files (run at build time)
-npx slintorm generate
+npx slintorm generate           # scan TypeScript files, write schema/generated.ts
+npx slintorm migrate            # apply pending migrations
+npx slintorm rollback           # roll back most recent batch
+npx slintorm rollback <name>    # roll back specific migration by name
+npx slintorm rollback --to <n>  # roll back to batch number N
+npx slintorm status             # show pending / applied migrations
+npx slintorm fresh              # drop all tables and re-run all migrations (dev only)
+npx slintorm drop-tracking      # remove _slint_migrations table only
+npx slintorm --help             # print all commands
+```
 
-# Or via package.json script
-slintorm generate
+Config resolution order (highest to lowest): CLI flags > slintorm.config.js > package.json#slintorm
+
+---
+
+## Schema Generation
+
+```bash
+npx slintorm generate
+# Output: src/schema/generated.ts
+```
+
+`generated.ts` exports:
+- `ModelMap` — typed model map for use with `new ORMManager<ModelMap>()`
+- `schema` — pre-built schema object to pass as the `schema` option
+
+```typescript
+// Import both from the same file
+import { schema, type ModelMap } from './schema/generated';
+
+const orm = new ORMManager<ModelMap>({
+  driver: 'sqlite',
+  databaseUrl: './dev.db',
+  modelMap: {} as ModelMap,
+  schema,   // skips filesystem scan; required in edge runtimes
+});
+```
+
+Generator works by tokenizing TypeScript source files with a lightweight regex-based scanner — no ts-morph, no TypeScript compiler API at runtime.
+
+---
+
+## Edge / Serverless Pattern
+
+```typescript
+// 1. Generate at build time (CI/CD pipeline):
+//    npx slintorm generate
+
+// 2. Commit src/schema/generated.ts
+
+// 3. Import schema and use in edge function:
+import ORMManager from 'slintorm/browser';   // edge-safe entrypoint
+import { schema } from './schema/generated';
+
+const orm = new ORMManager({
+  driver: 'postgres',
+  databaseUrl: process.env.DATABASE_URL!,
+  schema,   // no filesystem reads
+  // No dir, no migrate()
+});
+```
+
+### What is NOT available in edge runtimes
+
+- `orm.migrate()` — requires filesystem
+- SQLite driver — requires native bindings
+- Schema auto-generation — requires scanning .ts files
+- `require()` / `fs` — not available in V8 isolates
+
+### Edge runtime support matrix
+
+| Runtime              | SQLite | Postgres           | MySQL              | MongoDB      |
+|----------------------|--------|--------------------|--------------------|--------------|
+| Node.js              | yes    | yes                | yes                | yes          |
+| Next.js (Node)       | yes*   | yes                | yes                | yes          |
+| Next.js Edge         | no     | yes (Neon)         | yes                | HTTP API     |
+| Cloudflare Workers   | no     | yes (Hyperdrive)   | yes (Hyperdrive)   | HTTP API     |
+| Deno Deploy          | no     | yes                | no                 | HTTP API     |
+
+*requires serverExternalPackages config
+
+---
+
+## TypeScript Types — Full Reference
+
+```typescript
+import ORMManager, {
+  type ORMManagerConfig,
+  type ModelHooks,
+  type DBStore,
+  type ReadonlyDBStore,
+  type ModelAPI,
+  type EntityWithUpdate,
+  type FieldRules,
+  type SQLExecResult,
+  type ExecFn,
+  type OpComparison,
+  type RelationKind,
+  type RelationDef,
+  type DBDriver,
+  ORMError,
+  ORMErrorCode,
+  ValidationError,
+  Validator,
+} from 'slintorm';
+
+// DBDriver
+type DBDriver = 'sqlite' | 'postgres' | 'mysql' | 'mongodb';
+
+// OpComparison — valid WHERE operators
+type OpComparison = '=' | '!=' | '<' | '<=' | '>' | '>=' | 'LIKE' | 'ILIKE';
+
+// RelationKind
+type RelationKind = 'onetomany' | 'manytoone' | 'onetoone' | 'manytomany';
+
+// SQLExecResult
+interface SQLExecResult {
+  rows: unknown[];
+  rowsAffected: number;
+  lastInsertId: number | null;
+}
+
+// EntityWithUpdate<T>
+type EntityWithUpdate<T> = T & {
+  update(data: Partial<T>): Promise<EntityWithUpdate<T>>;
+  delete(): Promise<void>;
+  refresh(): Promise<EntityWithUpdate<T>>;
+  toJSON(): T;
+};
+
+// FieldRules<T>
+type FieldRules<T> = {
+  [K in keyof T]?: {
+    required?: boolean;
+    email?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+    match?: RegExp;
+    custom?: (value: unknown, row: Partial<T>) => string | null | Promise<string | null>;
+  };
+};
+
+// ModelHooks<T>
+interface ModelHooks<T> {
+  onCreateBefore?: (data: T) => T | void | Promise<T | void>;
+  onCreateAfter?: (item: T) => void | Promise<void>;
+  onUpdateBefore?: (old: T, newData: Partial<T>) => Partial<T> | void | Promise<Partial<T> | void>;
+  onUpdateAfter?: (old: T, newData: Partial<T>) => void | Promise<void>;
+  onDeleteBefore?: (deleted: T) => void;
+  onDeleteAfter?: (deleted: T) => void;
+}
+
+// DBStore<TModelMap> — typed db object
+// orm.db is DBStore<ModelMap>
+// Each key is a ModelAPI for the corresponding model
+
+// ReadonlyDBStore<TModelMap>
+// Same as DBStore but insert/update/delete are not available
 ```
 
 ---
 
-## package.json (v1.1.4)
+## Common Runtime Errors
 
-```json
-{
-  "name": "slintorm",
-  "version": "1.1.4",
-  "type": "module",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
-  "exports": {
-    ".": {
-      "types":   "./dist/src/index.d.ts",
-      "browser": "./dist/src/browser.js",
-      "import":  "./dist/src/index.js",
-      "require": "./dist/src/index.cjs",
-      "default": "./dist/src/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "bin": { "slintorm": "./dist/src/bin/cli.js" },
-  "peerDependencies": {
-    "pg":             "^8.0.0",
-    "mysql2":         "^3.0.0",
-    "mongodb":        "^6.0.0",
-    "sqlite3":        "^5.0.0",
-    "sqlite":         "^5.0.0",
-    "better-sqlite3": "^9.0.0"
-  },
-  "peerDependenciesMeta": {
-    "pg":             { "optional": true },
-    "mysql2":         { "optional": true },
-    "mongodb":        { "optional": true },
-    "sqlite3":        { "optional": true },
-    "sqlite":         { "optional": true },
-    "better-sqlite3": { "optional": true }
-  }
-}
+| Error | Cause | Fix |
+|-------|-------|-----|
+| ORMError: UNIQUE_VIOLATION | Duplicate in unique column | Check before insert or use upsert() |
+| ORMError: NOT_NULL_VIOLATION | NULL in NOT NULL column | Provide required field |
+| ORMError: FOREIGN_KEY_VIOLATION | Reference to missing row | Insert referenced record first |
+| ORMError: CHECK_VIOLATION | Failed CHECK/ENUM constraint | Use valid enum value |
+| ValidationError | validate() rule failed | Check err.errors for field messages |
+| Filter must contain at least one field | get({}) or delete({}) | Always include at least one filter key |
+| No SQLite driver found | Driver not installed | npm install better-sqlite3 |
+| Cannot load schema from disk | Edge runtime, no schema passed | Pass schema from generated.ts |
+
+---
+
+## package.json exports map (v1.1.5)
+
 ```
+slintorm          -> dist/src/index.js      (Node.js — full API)
+slintorm (browser condition) -> dist/src/browser.js  (edge-safe subset)
+slintorm (CJS)    -> dist/src/index.cjs     (CommonJS)
+```
+
+The browser export is automatically selected by edge bundlers (Cloudflare, Vercel Edge). Explicitly import `slintorm/browser` if needed.
+
+---
+
+## Recommended db.ts pattern
+
+```typescript
+import ORMManager from 'slintorm';
+import { schema, type ModelMap } from './schema/generated';
+
+const orm = new ORMManager<ModelMap>({
+  driver: process.env.DB_DRIVER as 'sqlite' | 'postgres' | 'mysql' | 'mongodb',
+  databaseUrl: process.env.DATABASE_URL!,
+  dir: './src',
+  logs: process.env.NODE_ENV === 'development',
+  modelMap: {} as ModelMap,
+  schema,
+});
+
+if (process.env.NODE_ENV !== 'edge') {
+  await orm.migrate();
+}
+
+export const db = orm.db;
+export default orm;
+```
+
+---
+
+*SlintORM v1.1.5 — https://github.com/emeraldlinks/slintorm*

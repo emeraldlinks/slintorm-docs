@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { VERSION } from '@/lib/config';
 
 const nav = [
   {
@@ -97,7 +98,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             fontFamily: 'var(--font-mono)',
             color: 'var(--color-accent)',
             padding: '0.1em 0.4em',
-          }}>v1.1.4</span>
+          }}>v{VERSION}</span>
         </Link>
       </div>
 
