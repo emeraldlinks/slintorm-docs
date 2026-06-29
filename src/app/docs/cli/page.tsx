@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'CLI — SlintORM' };
+export const metadata = {
+  title: 'CLI — SlintORM',
+  description: "SlintORM CLI — generate, migrate, rollback, status, fresh, drop-tracking commands with all flags.",
+  alternates: { canonical: '/docs/cli' },
+};
 
 const generate = `# Generate schema files from TypeScript source
 # Scans --dir (or config dir) for interfaces, outputs:

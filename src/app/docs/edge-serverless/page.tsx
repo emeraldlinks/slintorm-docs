@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Edge / Serverless — SlintORM' };
+export const metadata = {
+  title: 'Edge / Serverless — SlintORM',
+  description: "SlintORM on Cloudflare Workers, Next.js Edge, and Deno Deploy — schema import pattern, driver matrix, CI/CD.",
+  alternates: { canonical: '/docs/edge-serverless' },
+};
 
 const step1 = `# Step 1: Generate schema files at build time
 # Run this in CI or before deploying — NOT at edge runtime

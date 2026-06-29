@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Validation — SlintORM' };
+export const metadata = {
+  title: 'Validation — SlintORM',
+  description: "SlintORM validation — FieldRules, validate(), check(), ValidationError, and the Validator class.",
+  alternates: { canonical: '/docs/validation' },
+};
 
 const validateThrows = `// model.validate(data, rules)
 // Throws ValidationError if any rule fails

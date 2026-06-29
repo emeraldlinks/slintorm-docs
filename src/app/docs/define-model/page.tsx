@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'defineModel — SlintORM' };
+export const metadata = {
+  title: 'defineModel — SlintORM',
+  description: "defineModel API — all 24 ModelAPI methods, EntityWithUpdate, lifecycle hooks, and the ModelMap pattern.",
+  alternates: { canonical: '/docs/define-model' },
+};
 
 const manualExport = `// db.ts
 import ORMManager from 'slintorm';

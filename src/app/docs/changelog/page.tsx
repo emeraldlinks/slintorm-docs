@@ -1,6 +1,10 @@
 import DocLayout from '@/components/DocLayout';
 
-export const metadata = { title: 'Changelog — SlintORM' };
+export const metadata = {
+  title: 'Changelog — SlintORM',
+  description: "SlintORM v1.1.4 changelog — edge runtime support, bug fixes, CLI additions, documentation updates.",
+  alternates: { canonical: '/docs/changelog' },
+};
 
 const v114 = [
   { type: 'feat', text: 'Edge / serverless runtime support via slintorm/browser export condition' },

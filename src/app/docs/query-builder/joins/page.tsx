@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Joins — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Joins — SlintORM Query Builder',
+  description: "SlintORM query builder — INNER, LEFT, RIGHT, FULL OUTER joins, multi-join patterns, auto-qualification.",
+  alternates: { canonical: '/docs/query-builder/joins' },
+};
 
 const innerJoin = `// .join(table, left, op, right) — INNER JOIN
 const posts = await Post.query()

@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Soft Delete — SlintORM' };
+export const metadata = {
+  title: 'Soft Delete — SlintORM',
+  description: "SlintORM soft delete — @softDelete annotation, auto-filtering, withTrashed, onlyTrashed, restore.",
+  alternates: { canonical: '/docs/soft-delete' },
+};
 
 const modelDef = `// Mark deletedAt with @softDelete
 interface User {

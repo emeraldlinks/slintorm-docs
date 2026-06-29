@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Relations — SlintORM' };
+export const metadata = {
+  title: 'Relations — SlintORM',
+  description: "SlintORM relations — one-to-many, many-to-one, one-to-one, many-to-many with annotations and preload examples.",
+  alternates: { canonical: '/docs/relations' },
+};
 
 const oneToMany = `// One-to-Many: User has many Posts
 // Annotation goes on the parent side

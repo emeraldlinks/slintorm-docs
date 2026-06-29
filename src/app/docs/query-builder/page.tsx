@@ -2,7 +2,11 @@ import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 import Link from 'next/link';
 
-export const metadata = { title: 'Query Builder — SlintORM' };
+export const metadata = {
+  title: 'Query Builder — SlintORM',
+  description: "SlintORM query builder overview — all builder entry points, terminal methods, chaining, and per-driver SQL dialect differences.",
+  alternates: { canonical: '/docs/query-builder' },
+};
 
 const entryPoints = `// Four builder entry points — each returns a different builder class
 

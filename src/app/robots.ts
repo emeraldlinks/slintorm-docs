@@ -1,0 +1,24 @@
+import type { MetadataRoute } from 'next';
+
+export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slintorm-docs.vercel.app';
+  return {
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+      },
+      {
+        userAgent: ['GPTBot', 'ChatGPT-User'],
+        allow: '/',
+        crawlDelay: 2,
+      },
+      {
+        userAgent: ['Claude-Web', 'anthropic-ai', 'PerplexityBot', 'cohere-ai', 'CCBot'],
+        allow: '/',
+      },
+    ],
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
+  };
+}

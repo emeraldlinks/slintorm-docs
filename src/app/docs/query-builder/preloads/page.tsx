@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Preloads — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Preloads — SlintORM Query Builder',
+  description: "SlintORM preloads — eager loading with no N+1, nested preloads, cycle detection, all 4 relation kinds.",
+  alternates: { canonical: '/docs/query-builder/preloads' },
+};
 
 const preloadBasic = `// .preload("relation") — eager-load a declared relation
 // Batch-fetched in a single IN query — no N+1

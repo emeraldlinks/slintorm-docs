@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'CRUD — SlintORM' };
+export const metadata = {
+  title: 'CRUD — SlintORM',
+  description: "SlintORM CRUD operations — insert, get, getAll, update, delete, upsert, findOrCreate, exists, count, aggregates, restore.",
+  alternates: { canonical: '/docs/crud' },
+};
 
 const insertCode = `// insert(data) — returns EntityWithUpdate<T>
 const user = await User.insert({

@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Ordering & Pagination — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Ordering & Pagination — SlintORM Query Builder',
+  description: "SlintORM query builder — orderBy, limit, offset, paginate, getPaginated, first.",
+  alternates: { canonical: '/docs/query-builder/ordering-pagination' },
+};
 
 const orderBy = `// .orderBy(column, direction)
 // direction: 'ASC' | 'DESC'

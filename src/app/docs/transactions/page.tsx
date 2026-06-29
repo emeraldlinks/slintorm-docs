@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Transactions — SlintORM' };
+export const metadata = {
+  title: 'Transactions — SlintORM',
+  description: "SlintORM transactions — orm.transaction(), orm.batch(), automatic rollback, and raw adapter access.",
+  alternates: { canonical: '/docs/transactions' },
+};
 
 const transactionBasic = `// orm.transaction(async (trx) => { ... })
 // BEGIN on entry, COMMIT on success, ROLLBACK on any throw

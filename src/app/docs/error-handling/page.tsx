@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Error Handling — SlintORM' };
+export const metadata = {
+  title: 'Error Handling — SlintORM',
+  description: "SlintORM error handling — ORMError, all 5 ORMErrorCode values, per-driver constraint parsing.",
+  alternates: { canonical: '/docs/error-handling' },
+};
 
 const catchOrmError = `// Import ORMError and ORMErrorCode
 import { ORMError, ORMErrorCode } from 'slintorm';

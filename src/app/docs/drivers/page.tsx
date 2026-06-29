@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Drivers — SlintORM' };
+export const metadata = {
+  title: 'Drivers — SlintORM',
+  description: "SlintORM database drivers — SQLite, PostgreSQL, MySQL, MongoDB configuration and feature comparison.",
+  alternates: { canonical: '/docs/drivers' },
+};
 
 const sqliteSetup = `// SQLite — better-sqlite3 (recommended)
 // WAL mode enabled automatically for better concurrency

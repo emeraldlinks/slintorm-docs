@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Schema Generation — SlintORM' };
+export const metadata = {
+  title: 'Schema Generation — SlintORM',
+  description: "SlintORM schema generation — how generated.ts works, ModelMap, schema export, when to regenerate.",
+  alternates: { canonical: '/docs/schema-generation' },
+};
 
 const generateCmd = `# Scan TypeScript source files and output schema artifacts
 npx slintorm generate

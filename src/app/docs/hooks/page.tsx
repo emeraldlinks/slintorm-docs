@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Hooks — SlintORM' };
+export const metadata = {
+  title: 'Hooks — SlintORM',
+  description: "SlintORM lifecycle hooks — all 6 ModelHooks with async support, data mutation, and real-world examples.",
+  alternates: { canonical: '/docs/hooks' },
+};
 
 const allHooks = `// ModelHooks<T> — all 6 lifecycle hooks
 // Passed as third argument to orm.defineModel()

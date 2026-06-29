@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Aggregates — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Aggregates — SlintORM Query Builder',
+  description: "SlintORM advanced query builder — countAggregate, sum, avg, min, max, groupBy, having, distinct, window functions.",
+  alternates: { canonical: '/docs/query-builder/aggregates' },
+};
 
 const countAggregate = `// .countAggregate() — adds COUNT(*) AS count to SELECT
 // Different from ModelAPI.count() which returns a scalar number

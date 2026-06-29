@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'where() — SlintORM Query Builder' };
+export const metadata = {
+  title: 'where() — SlintORM Query Builder',
+  description: "SlintORM query builder — where, orWhere, whereRaw, whereIn, whereNull, whereBetween, ILike with all operators.",
+  alternates: { canonical: '/docs/query-builder/where' },
+};
 
 const whereBasic = `// where(column, op, value)
 const admins = await User.query()

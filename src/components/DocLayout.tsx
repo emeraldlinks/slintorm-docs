@@ -44,27 +44,32 @@ export default function DocLayout({ children }: { children: React.ReactNode }) {
           color: 'var(--color-fg-subtle)',
         }}>
           <span>SlintORM v1.1.4 &mdash; MIT &mdash; <a href="https://github.com/emeraldlinks/slintorm" style={{ color: 'var(--color-fg-subtle)' }}>GitHub</a></span>
-          <a
-            href="/llms.txt"
-            download
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              color: 'var(--color-accent)',
-              textDecoration: 'none',
-              border: '1px solid rgba(34,197,94,0.25)',
-              borderRadius: '6px',
-              padding: '0.3rem 0.75rem',
-            }}
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            llms.txt
-          </a>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <a href="/llms.txt" download style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+              color: 'var(--color-accent)', textDecoration: 'none',
+              border: '1px solid rgba(34,197,94,0.25)', borderRadius: '6px', padding: '0.3rem 0.65rem',
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              llms.txt
+            </a>
+            <a href="/llms-full.txt" download style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+              color: 'var(--color-accent)', textDecoration: 'none',
+              border: '1px solid rgba(34,197,94,0.25)', borderRadius: '6px', padding: '0.3rem 0.65rem',
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              llms-full.txt
+            </a>
+          </div>
         </footer>
       </main>
 

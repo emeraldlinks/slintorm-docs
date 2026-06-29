@@ -65,7 +65,7 @@ export default function CodeBlock({ code, language = 'typescript', filename }: C
           borderRadius: filename ? '0 0 8px 8px' : '8px',
           marginBottom: 0,
         }}>
-          <code ref={ref} className={`language-${language}`}>
+          <code ref={ref} className={`language-${language}`} data-language={language}>
             {code.trim()}
           </code>
         </pre>

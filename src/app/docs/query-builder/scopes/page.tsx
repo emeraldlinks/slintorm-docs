@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Scopes — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Scopes — SlintORM Query Builder',
+  description: "SlintORM scopes and ExtendedQueryBuilder — scope(), inherited methods, Validator standalone class.",
+  alternates: { canonical: '/docs/query-builder/scopes' },
+};
 
 const extendedClass = `// ExtendedQueryBuilder<T> — returned by model.extended()
 // Extends QueryBuilder<T> with one additional method: scope()

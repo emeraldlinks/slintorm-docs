@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Installation — SlintORM' };
+export const metadata = {
+  title: 'Installation — SlintORM',
+  description: "Install SlintORM and its optional database drivers — SQLite, PostgreSQL, MySQL, MongoDB. Zero runtime dependencies.",
+  alternates: { canonical: '/docs/installation' },
+};
 
 const installBase = `npm install slintorm`;
 const installSqlite = `# Recommended (synchronous, WAL mode, fastest)

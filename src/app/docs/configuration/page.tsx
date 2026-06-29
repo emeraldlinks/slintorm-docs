@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Configuration — SlintORM' };
+export const metadata = {
+  title: 'Configuration — SlintORM',
+  description: "Configure SlintORM with ORMManagerConfig. All options, driver-specific examples, and the ModelMap typed db pattern.",
+  alternates: { canonical: '/docs/configuration' },
+};
 
 const configFile = `// slintorm.config.js
 module.exports = {

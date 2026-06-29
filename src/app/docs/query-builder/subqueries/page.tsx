@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Subqueries — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Subqueries — SlintORM Query Builder',
+  description: "SlintORM subqueries — selectSubquery, exists, notExists, whereRaw subqueries, UNION and UNION ALL.",
+  alternates: { canonical: '/docs/query-builder/subqueries' },
+};
 
 const selectSubquery = `// .selectSubquery(subquery, alias)
 // Adds a correlated subquery in the SELECT clause

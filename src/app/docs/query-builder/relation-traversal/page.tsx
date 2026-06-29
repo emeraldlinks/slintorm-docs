@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Relation Traversal — SlintORM Query Builder' };
+export const metadata = {
+  title: 'Relation Traversal — SlintORM Query Builder',
+  description: "SlintORM relation traversal — throughRelation, whereRelated, relatedTo with BFS path discovery.",
+  alternates: { canonical: '/docs/query-builder/relation-traversal' },
+};
 
 const throughRelation = `// .throughRelation(path)
 // Dot-separated path of relation names

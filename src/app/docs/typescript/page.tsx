@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'TypeScript — SlintORM' };
+export const metadata = {
+  title: 'TypeScript — SlintORM',
+  description: "SlintORM TypeScript types — ModelAPI, EntityWithUpdate, DBStore, FieldRules, ModelHooks, all utility types.",
+  alternates: { canonical: '/docs/typescript' },
+};
 
 const modelApiType = `// ModelAPI<T> — all 24 methods
 // Returned by orm.defineModel<T>(table, name, hooks?)

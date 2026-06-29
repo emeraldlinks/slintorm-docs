@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Models — SlintORM' };
+export const metadata = {
+  title: 'Models — SlintORM',
+  description: "Define SlintORM models as plain TypeScript interfaces with annotation comments. Full field metadata reference.",
+  alternates: { canonical: '/docs/models' },
+};
 
 const userModel = `// src/models.ts
 

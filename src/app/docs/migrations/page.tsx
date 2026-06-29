@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'Migrations — SlintORM' };
+export const metadata = {
+  title: 'Migrations — SlintORM',
+  description: "SlintORM auto-migrations — orm.migrate(), alter-table, _slint_migrations tracking, hooks, snapshots.",
+  alternates: { canonical: '/docs/migrations' },
+};
 
 const migrate = `// orm.migrate() — reads TypeScript source files,
 // generates schema, diffs against current DB state, applies DDL

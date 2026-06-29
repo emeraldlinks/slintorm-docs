@@ -1,7 +1,11 @@
 import DocLayout from '@/components/DocLayout';
 import CodeBlock from '@/components/CodeBlock';
 
-export const metadata = { title: 'select() — SlintORM Query Builder' };
+export const metadata = {
+  title: 'select() — SlintORM Query Builder',
+  description: "SlintORM query builder — select(), exclude(), and get() terminal method with return type reference.",
+  alternates: { canonical: '/docs/query-builder/select' },
+};
 
 const selectBasic = `// select(...columns) — pick specific columns
 const users = await User.query()
