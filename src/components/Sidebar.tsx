@@ -33,7 +33,6 @@ const nav = [
       { label: 'Subqueries', href: '/docs/query-builder/subqueries' },
       { label: 'Relation Traversal', href: '/docs/query-builder/relation-traversal' },
       { label: 'Scopes & ExtendedQueryBuilder', href: '/docs/query-builder/scopes' },
-      { label: 'withTrashed / onlyTrashed', href: '/docs/soft-delete' },
     ],
   },
   {

@@ -1,4 +1,5 @@
 import Sidebar from './Sidebar';
+import DocPager from './DocPager';
 import { VERSION, GITHUB_URL } from '@/lib/config';
 
 export default function DocLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +30,9 @@ export default function DocLayout({ children }: { children: React.ReactNode }) {
         margin: '0 auto',
       }} className="doc-main">
         {children}
+
+        {/* Prev / Next navigation */}
+        <DocPager />
 
         {/* Footer */}
         <footer style={{
