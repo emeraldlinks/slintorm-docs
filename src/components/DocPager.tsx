@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 
 // Ordered list of all doc pages — matches sidebar order, deduped
 const pages = [
+  { label: 'Introduction',                  href: '/docs' },
   { label: 'Installation',                  href: '/docs/installation' },
   { label: 'Configuration',                 href: '/docs/configuration' },
   { label: 'Models',                        href: '/docs/models' },

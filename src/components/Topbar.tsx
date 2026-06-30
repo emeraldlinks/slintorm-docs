@@ -55,7 +55,7 @@ export default function Topbar() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link href="/docs/installation" style={{
+          <Link href="/docs" style={{
             fontSize: '0.875rem',
             color: 'var(--color-fg-muted)',
             textDecoration: 'none',
