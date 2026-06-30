@@ -45,8 +45,12 @@ export default function Topbar() {
             </svg>
           </button>
 
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <img src="/logo.svg" alt="SlintORM" height="30" style={{ display: 'block' }} />
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', overflow: 'hidden' }}>
+            <img
+              src="/logo.svg"
+              alt="SlintORM"
+              style={{ display: 'block', height: '26px', width: 'auto', maxWidth: '180px' }}
+            />
           </Link>
         </div>
 

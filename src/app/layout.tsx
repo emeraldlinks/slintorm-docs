@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Topbar from "@/components/Topbar";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slintorm-docs.vercel.app';
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slintorm.vercel.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
