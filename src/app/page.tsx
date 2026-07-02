@@ -6,6 +6,7 @@ import { VERSION } from '@/lib/config';
 const quickstart = `import ORMManager from 'slintorm';
 
 interface User {
+  // @auto;@primaryKey
   id: number;
   // @unique
   email: string;

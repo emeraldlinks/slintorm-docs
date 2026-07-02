@@ -10,7 +10,8 @@ export const metadata = {
 const userModel = `// src/models.ts
 
 interface User {
-  id: number;           // @auto @primaryKey
+  // @auto;@primaryKey
+  id: number;
   // @unique
   email: string;
   name: string;
@@ -27,7 +28,8 @@ interface User {
 }`;
 
 const postModel = `interface Post {
-  id: number;           // @auto @primaryKey
+  // @auto;@primaryKey
+  id: number;
   title: string;
   // @length:5000
   body: string;
@@ -42,14 +44,16 @@ const postModel = `interface Post {
 }`;
 
 const teamModel = `interface Team {
-  id: number;           // @auto @primaryKey
+  // @auto;@primaryKey
+  id: number;
   name: string;
   // @relation manytomany:User;through:team_members;foreignKey:teamId;relatedKey:userId
   members?: User[];
 }`;
 
 const profileModel = `interface Profile {
-  id: number;           // @auto @primaryKey
+  // @auto;@primaryKey
+  id: number;
   // @unique
   userId: number;
   // @nullable
@@ -59,7 +63,8 @@ const profileModel = `interface Profile {
 }`;
 
 const enumModel = `interface Todo {
-  id: number;           // @auto @primaryKey
+  // @auto;@primaryKey
+  id: number;
   title: string;
   // @enum:(pending,in_progress,done)
   status: string;

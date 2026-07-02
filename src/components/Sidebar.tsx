@@ -19,6 +19,8 @@ const nav = [
       { label: 'Models', href: '/docs/models' },
       { label: 'defineModel', href: '/docs/define-model' },
       { label: 'CRUD', href: '/docs/crud' },
+      { label: 'Upsert & findOrCreate', href: '/docs/upsert-find-or-create' },
+      { label: 'Batch Operations', href: '/docs/batch-operations' },
     ],
   },
   {
@@ -34,6 +36,8 @@ const nav = [
       { label: 'Subqueries', href: '/docs/query-builder/subqueries' },
       { label: 'Relation Traversal', href: '/docs/query-builder/relation-traversal' },
       { label: 'Scopes & ExtendedQueryBuilder', href: '/docs/query-builder/scopes' },
+      { label: 'Advanced Queries', href: '/docs/advanced-queries' },
+      { label: 'Window Functions', href: '/docs/window-functions' },
     ],
   },
   {
@@ -58,9 +62,15 @@ const nav = [
     group: 'Advanced',
     items: [
       { label: 'Edge / Serverless', href: '/docs/edge-serverless' },
+      { label: 'Edge Features', href: '/docs/edge-features' },
       { label: 'Drivers', href: '/docs/drivers' },
       { label: 'TypeScript', href: '/docs/typescript' },
       { label: 'Schema Generation', href: '/docs/schema-generation' },
+      { label: 'Raw SQL & SqlExpr', href: '/docs/raw-sql' },
+      { label: 'Streaming', href: '/docs/streaming' },
+      { label: 'Plugins', href: '/docs/plugins' },
+      { label: 'Context & Prepared Statements', href: '/docs/context-prepared' },
+      { label: 'Database Resolver', href: '/docs/database-resolver' },
       { label: 'Changelog', href: '/docs/changelog' },
     ],
   },
