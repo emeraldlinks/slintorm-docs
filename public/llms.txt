@@ -8,13 +8,13 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.1.5
+- Version: 1.1.7
 
 ---
 
 ## What is SlintORM
 
-SlintORM is a lightweight, fully-typed TypeScript ORM for SQLite, PostgreSQL, MySQL, and MongoDB. It runs in Node.js, serverless functions, and V8 isolate edge runtimes (Cloudflare Workers, Vercel Edge, Deno Deploy). It has zero runtime dependencies — all database drivers are optional peer dependencies installed only when needed.
+SlintORM is a lightweight, fully-typed TypeScript ORM for SQLite, PostgreSQL, MySQL, and MongoDB. It runs in Node.js, serverless functions, and V8 isolate edge runtimes (Cloudflare Workers, Vercel Edge, Deno Deploy). It has zero runtime dependencies — all database drivers are loaded dynamically at connect time and installed only when needed.
 
 Key design decisions:
 - Models are plain TypeScript interfaces with annotation comments — no separate schema files
@@ -38,7 +38,7 @@ npm install mysql2                # MySQL / PlanetScale / TiDB
 npm install mongodb               # MongoDB
 ```
 
-All database drivers are optional peerDependencies. SlintORM installs none of them.
+All database drivers are optional — SlintORM installs none of them. Install only the driver(s) you actually use.
 
 For Next.js / Turbopack, add to next.config.ts:
 ```typescript
@@ -101,7 +101,7 @@ Models are plain TypeScript interfaces. Annotations in `// comment` lines above 
 
 ```typescript
 interface User {
-  id: number;                   // @auto @primaryKey
+  id: number;                   // @auto;primaryKey
   // @unique
   email: string;
   name: string;
@@ -909,7 +909,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.1.5)
+## package.json exports map (v1.1.7)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -946,4 +946,4 @@ export default orm;
 
 ---
 
-*SlintORM v1.1.5 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.1.7 — https://github.com/emeraldlinks/slintorm*
