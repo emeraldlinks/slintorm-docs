@@ -10,9 +10,32 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
+    version: '1.2.6',
+    date: '2026-07-04',
+    latest: true,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          '@random annotation for auto-generated field values (string:N, number:N)',
+          'EntityWithUpdate methods on query builder results (.get(), .first())',
+          'Bulk delete() and update() on QueryBuilder — execute DELETE/UPDATE from accumulated WHERE clauses',
+        ],
+      },
+      {
+        label: 'fix',
+        items: [
+          'Insert refetch logic now handles @random PKs — no longer overwrites string UUIDs with SQLite lastID',
+          '@json fields auto-detected for inferred (schema-less) models',
+          'Plain objects JSON-serialized in insert() and deserialized in get() without explicit @json annotation',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.1.5',
     date: '2026-06-28',
-    latest: true,
+    latest: false,
     groups: [
       {
         label: 'fix',

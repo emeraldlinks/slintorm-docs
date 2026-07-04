@@ -48,7 +48,17 @@ const mod = await User.query()
 const result = await Post.query()
   .where('published', '=', true)
   .getPaginated(1, 20);
-// { data: Post[], total: number, page: number, lastPage: number }`;
+// { data: Post[], total: number, page: number, lastPage: number }
+
+// .delete() — bulk delete matching rows (non-terminal, executes immediately)
+const deleted = await User.query()
+  .where('status', '=', 'inactive')
+  .delete();
+
+// .update(data) — bulk update matching rows (non-terminal, executes immediately)
+const updated = await User.query()
+  .where('role', '=', 'guest')
+  .update({ role: 'user' });`;
 
 const dialectSQL = `// Dialects — the QB emits different SQL per driver automatically
 // You write the same query builder code; SlintORM adapts the output
@@ -155,9 +165,12 @@ export default function QueryBuilderIndexPage() {
       </p>
       <CodeBlock code={entryPoints} />
 
-      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Terminal methods: get() / first() / getPaginated()</h2>
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Terminal methods: get() / first() / getPaginated() / delete() / update()</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        These three methods execute the accumulated query and return results.
+        These methods execute the accumulated query and return results.
+        <code>get()</code>, <code>first()</code>, and <code>getPaginated()</code> are read-only accumulators — they
+        fire the query on call. <code>delete()</code> and <code>update(data)</code> fire immediately and are
+        <strong> not </strong> chainable (they return a count, not the builder).
         All other methods accumulate clauses without hitting the database.
       </p>
       <CodeBlock code={terminalMethods} />

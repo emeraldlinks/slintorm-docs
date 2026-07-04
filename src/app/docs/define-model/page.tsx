@@ -152,7 +152,8 @@ export default function DefineModelPage() {
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2.5rem' }}>EntityWithUpdate methods</h2>
       <p style={{ marginBottom: '1rem' }}>
-        Every row returned by <code>get()</code>, <code>insert()</code>, or <code>findOrCreate()</code> is augmented
+        Every row returned by <code>get()</code>, <code>insert()</code>, <code>findOrCreate()</code>,
+        <code>getAll()</code>, and all query builder methods (<code>query().get()</code>, <code>query().first()</code>) is augmented
         with convenience methods for mutation and refresh.
       </p>
       <CodeBlock code={entityMethods} filename="example.ts" />
