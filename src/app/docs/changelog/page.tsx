@@ -10,9 +10,24 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
-    version: '1.3.0',
+    version: '1.3.1',
     date: '2026-07-04',
     latest: true,
+    groups: [
+      {
+        label: 'fix',
+        items: [
+          'Boolean values serialized to 0/1 on all write paths (insert, update, query builder)',
+          'query().where(), .first(), .update(), .delete() no longer throw sqlite3 binding error with boolean params',
+          'insert() now uses serializeValue — eliminates duplicate inline logic',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.3.0',
+    date: '2026-07-04',
+    latest: false,
     groups: [
       {
         label: 'feat',
