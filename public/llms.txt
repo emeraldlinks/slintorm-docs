@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.1.7
+- Version: 1.2.6
 
 ---
 
@@ -140,6 +140,10 @@ interface User {
 | @enum:(a,b,c)     | CHECK constraint (SQLite/Postgres) or ENUM type (MySQL) |
 | @default:value    | DEFAULT value |
 | @comment:text     | column comment (MySQL/Postgres) |
+| @random:string:N  | generates random string of length N on insert |
+| @random:number:N  | generates random N-digit number on insert |
+| @random:string(N) | alternate syntax for @random:string:N |
+| @random:number(N) | alternate syntax for @random:number:N |
 | @relation ...     | declares a relation (see Relations section) |
 | @relationship ... | alias for @relation |
 
@@ -266,7 +270,7 @@ model.extended()   // ExtendedQueryBuilder<T> — scope()
 
 ## EntityWithUpdate
 
-Every row returned by `get()`, `insert()`, or `findOrCreate()` is an `EntityWithUpdate<T>`:
+Every row returned by `get()`, `insert()`, `findOrCreate()`, `getAll()`, and all query builder methods (`query().get()`, `query().first()`) is an `EntityWithUpdate<T>`:
 
 ```typescript
 const user = await User.get({ id: 1 });
@@ -300,6 +304,16 @@ result.data      // Post[]
 result.total     // total matching rows
 result.page      // current page
 result.lastPage  // Math.ceil(total / perPage)
+
+// .delete() — bulk delete, returns number of rows deleted
+const deleted = await User.query()
+  .where('status', '=', 'inactive')
+  .delete();
+
+// .update(data) — bulk update, returns number of rows updated
+const updated = await User.query()
+  .where('role', '=', 'guest')
+  .update({ role: 'user' });
 ```
 
 ### SELECT
@@ -909,7 +923,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.1.7)
+## package.json exports map (v1.2.6)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -946,4 +960,4 @@ export default orm;
 
 ---
 
-*SlintORM v1.1.7 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.2.6 — https://github.com/emeraldlinks/slintorm*
