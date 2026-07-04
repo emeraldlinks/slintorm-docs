@@ -10,7 +10,7 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
-    version: '1.2.6',
+    version: '1.3.0',
     date: '2026-07-04',
     latest: true,
     groups: [
