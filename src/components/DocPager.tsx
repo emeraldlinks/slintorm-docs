@@ -42,6 +42,7 @@ const pages = [
   { label: 'Plugins',                       href: '/docs/plugins' },
   { label: 'Context & Prepared Statements', href: '/docs/context-prepared' },
   { label: 'Database Resolver',             href: '/docs/database-resolver' },
+  { label: 'Upcoming Features',             href: '/docs/upcoming-features' },
   { label: 'Changelog',                     href: '/docs/changelog' },
 ];
 

@@ -960,4 +960,54 @@ export default orm;
 
 ---
 
+---
+
+## Upcoming Annotations (in development)
+
+These annotations are being implemented in batches. All use zero external dependencies.
+
+### Omit / Visibility
+- `@omitdb` — No DB column, excluded from insert/update
+- `@omitjson` — Stored in DB, stripped from all read results unless explicitly `.select()`ed
+- `@omitmigrate` — Schema-only, migrator never creates/alters the column
+
+### Validation (zero-dep regex-based)
+- `@email` — Validate email format
+- `@url` — Validate URL format
+- `@uuid` — Validate UUID v4
+- `@phone` — Phone number format validation
+- `@min:N` / `@max:N` — Numeric range validation
+- `@minLength:N` / `@maxLength:N` — String length validation
+- `@pattern:regex` — Custom regex validation
+
+### Security (Node.js crypto, zero deps)
+- `@hash` — One-way hashing via pbkdf2/scrypt. `.verify()` for constant-time comparison
+- `@encrypt` — AES-256-GCM transparent encryption on write, decryption on read
+- `@token` — crypto.randomBytes token generation with prefix/encoding options
+- `@secret` — Composite: @hash + @omitjson + log-masking (for API keys, client secrets)
+
+### Masking & Sanitization
+- `@mask` — Output masking (creditcard, ssn, email, phone, showFirst, showLast, pattern). Bypass with `.withoutMasking()`
+- `@sanitize` — Input sanitization (trim, lower, upper, stripTags, escape)
+
+### Expiry & Audit
+- `@expires` — Auto-expire values (Nd, Nh, Nm). Expired rows return null / auto-filtered
+- `@cuid` — Create/Update/Delete user audit from context
+- `@tenant` / `@owner` — Multi-tenant filter + row ownership from context
+
+### Relationship Shortcuts
+- `@belongsTo:Model` — Shortcut for manytoone
+- `@hasMany:Model` — Shortcut for onetomany
+- `@hasOne:Model` — Shortcut for onetoone
+- `@belongsToMany:Model` — Shortcut for manytomany
+- Cross-model relation validation — errors if inverse relation is missing
+
+### Data Lifecycle & DDL
+- `@slug:sourceField` — Auto-generate URL slug on insert
+- `@counterCache:relation.field` — Auto-managed counter cache
+- `@fulltext` / `@spatial` / `@partialIndex` — Advanced index types
+
+---
+
 *SlintORM v1.3.1 — https://github.com/emeraldlinks/slintorm*
+
