@@ -3,7 +3,7 @@ import CodeBlock from '@/components/CodeBlock';
 
 export const metadata = {
   title: 'Upcoming Features — SlintORM',
-  description: "Preview of annotations and features coming in SlintORM — omit family, security, validation, sanitization, audit, and more.",
+  description: "Annotation roadmap for SlintORM — omit family and @mask are shipped; security, validation, sanitization, audit, and more coming.",
   alternates: { canonical: '/docs/upcoming-features' },
 };
 
@@ -15,6 +15,7 @@ const annotationSections = [
     items: [
       {
         name: '@omitdb',
+        shipped: true,
         summary: "Exclude field from database entirely — no column created, excluded from inserts and updates.",
         scenario: `You run a SaaS that stores raw webhook payloads for debugging. You want the payload available in your TypeScript model for in-memory processing (validation, transformation) but you don't want to bloat your database with multi-KB JSON blobs.
 
@@ -29,6 +30,7 @@ Instead: you process the payload, extract what you need into real columns, then 
       },
       {
         name: '@omitjson',
+        shipped: true,
         summary: "Field is stored and migrated normally, but stripped from all read results unless explicitly selected.",
         scenario: `Your User model has a large JSON column containing full OAuth token responses (access_token, refresh_token, expiry, scope, raw_profile). 99% of the time, your frontend only needs user.name and user.email. But when the token refresh job runs, it needs the full payload.
 
@@ -55,6 +57,7 @@ const full = await User.query()
       },
       {
         name: '@omitmigrate',
+        shipped: true,
         summary: "Field exists in the schema/TypeScript types but the migrator never creates, alters, or drops its column — manual DDL management.",
         scenario: `Your production database has a legacy column "ssn_last4" that was created by a previous migration tool. You're migrating to SlintORM but you don't want the migrator touching this column — it's already there, it has the right type, and altering it could trigger a full table rewrite on MySQL.
 
@@ -225,6 +228,7 @@ apiKey.key.verify(request.apiKey); // true or false`,
     items: [
       {
         name: '@mask',
+        shipped: true,
         summary: "Output masking — database stores the real value, but all read paths (get, getAll, query) return a masked version. Presets for creditcard, ssn, email, phone. Custom showFirst:N / showLast:N / showBoth:F,L / pattern templates. Bypass with .withoutMasking().",
         scenario: `Your support dashboard lets agents view user profiles. Agents need to verify identity but should never see full credit card numbers or SSNs. The compliance team, however, needs full access for audits.
 
@@ -562,8 +566,8 @@ export default function UpcomingFeaturesPage() {
     <DocLayout>
       <h1 style={{ marginBottom: '0.5rem' }}>Upcoming Features</h1>
       <p style={{ marginBottom: '1rem', fontSize: '1.05rem' }}>
-        A preview of annotations and features planned for upcoming SlintORM releases.
-        Every feature listed here has <strong>zero external dependencies</strong> —
+        Annotation roadmap for SlintORM. Items marked <strong>SHIPPED</strong> are fully implemented.
+        Remaining features have <strong>zero external dependencies</strong> —
         built entirely on Node.js built-in <code style={{ fontSize: '0.9em' }}>crypto</code> and standard library modules.
       </p>
       <div style={{
@@ -574,11 +578,11 @@ export default function UpcomingFeaturesPage() {
         marginBottom: '2rem',
         fontSize: '0.875rem',
       }}>
-        <strong style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
-          Work in progress
+        <strong style={{ color: '#22C55E', fontFamily: 'var(--font-mono)' }}>
+          ✓ Omit family and @mask shipped
         </strong>
         <p style={{ marginTop: '0.25rem', color: 'var(--color-fg-muted)' }}>
-          These features are being implemented in batches of 3 per day.
+          Remaining features are being implemented in batches of 3 per day.
           Check the <a href="/docs/changelog" style={{ color: 'var(--color-accent)' }}>changelog</a> for release status.
           Have a suggestion? Open an issue on GitHub.
         </p>
@@ -617,6 +621,20 @@ export default function UpcomingFeaturesPage() {
                 }}>
                   {item.name}
                 </code>
+                {item.shipped && (
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    color: '#fff',
+                    background: '#22C55E',
+                    borderRadius: '4px',
+                    padding: '2px 7px',
+                    textTransform: 'uppercase',
+                  }}>
+                    Shipped
+                  </span>
+                )}
               </div>
 
               <p style={{

@@ -91,6 +91,10 @@ const metaTags = [
   { tag: '@comment:text', effect: 'Adds column comment (MySQL/Postgres)' },
   { tag: '@relation ...', effect: 'Declares a relation. See Relations page.' },
   { tag: '@relationship ...', effect: 'Alias for @relation' },
+  { tag: '@mask:preset', effect: 'Masks output on read with built-in presets (ssn, creditcard, email, phone) or directives (showFirst:N, showLast:N, showBoth:F,L, char:X, pattern:...)' },
+  { tag: '@omitdb', effect: 'Excludes field from INSERT/UPDATE SET clauses and all read results; no column value stored in DB' },
+  { tag: '@omitjson', effect: 'Stores in DB but strips from all read results unless explicitly .select()ed' },
+  { tag: '@omitmigrate', effect: 'No column created/altered/dropped by the migrator — manual DDL; field still usable in queries' },
 ];
 
 export default function ModelsPage() {
