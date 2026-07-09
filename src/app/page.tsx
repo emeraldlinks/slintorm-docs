@@ -86,6 +86,7 @@ const comparison = [
   { feature: 'Soft delete built in', slint: true, drizzle: false, prisma: false },
   { feature: 'Lifecycle hooks', slint: true, drizzle: false, prisma: true },
   { feature: 'Relation traversal (relatedTo)', slint: true, drizzle: false, prisma: false },
+  { feature: '@mask / @omit annotations', slint: true, drizzle: false, prisma: false },
   { feature: 'No schema file required', slint: true, drizzle: false, prisma: false },
   { feature: 'SQLite WAL mode', slint: true, drizzle: true, prisma: true },
   { feature: 'MongoDB support', slint: true, drizzle: false, prisma: true },

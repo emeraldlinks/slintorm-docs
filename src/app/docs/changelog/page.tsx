@@ -10,6 +10,44 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
+    version: '1.5.0',
+    date: '2026-07-09',
+    latest: true,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          '@mask annotation with 8 presets/directives — ssn, creditcard, email, phone, showFirst:N, showLast:N, showBoth:F,L, char:X, pattern:...',
+          '@omitdb — exclude field from database entirely (no column stored)',
+          '@omitjson — store in DB, strip from all read results unless explicitly .select()ed',
+          '@omitmigrate — migrator never creates/alters/drops the column; manual DDL',
+          '.withoutMasking() query builder modifier — bypass masking for privileged callers',
+          'stripOmitDb() helper on get/getAll — automatically excludes @omitdb fields from reads',
+        ],
+      },
+      {
+        label: 'docs',
+        items: [
+          'All model interfaces consolidated into single src/interfaces.ts — no more duplicate interface definitions',
+          'Build yields zero TypeScript errors for the first time',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.4.0',
+    date: '2026-07-08',
+    latest: false,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'Pushed remote — slintorm repo + docs site deployed',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.3.1',
     date: '2026-07-04',
     latest: true,

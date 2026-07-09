@@ -229,7 +229,7 @@ apiKey.key.verify(request.apiKey); // true or false`,
       {
         name: '@mask',
         shipped: true,
-        summary: "Output masking — database stores the real value, but all read paths (get, getAll, query) return a masked version. Presets for creditcard, ssn, email, phone. Custom showFirst:N / showLast:N / showBoth:F,L / pattern templates. Bypass with .withoutMasking().",
+        summary: "Output masking — database stores the real value, but all read paths (get, getAll, query) return a masked version. Presets for ssn, creditcard, email, phone. Directives for showFirst:N, showLast:N, showBoth:F,L, char:X, pattern:... Bypass with .withoutMasking().",
         scenario: `Your support dashboard lets agents view user profiles. Agents need to verify identity but should never see full credit card numbers or SSNs. The compliance team, however, needs full access for audits.
 
 With @mask, the database stores the real SSN "123-45-6789" and credit card "4111-1111-1111-1234". All ORM queries return masked values: "***-**-6789" and "****-****-****-1234". 
@@ -246,6 +246,16 @@ For the compliance team, the model layer exposes .withoutMasking() on the query 
   email: string;
   // @mask:phone
   phone: string;
+  // @mask:showFirst:4
+  pinFirst4: string;
+  // @mask:showLast:4
+  pinLast4: string;
+  // @mask:showBoth:2,4
+  showStart2End4: string;
+  // @mask:char:*
+  starMasked: string;
+  // @mask:pattern:###-##-####
+  patternMasked: string;
 }
 
 // Agent view — automatically masked
