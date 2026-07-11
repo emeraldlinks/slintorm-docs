@@ -10,9 +10,25 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
-    version: '1.5.0',
+    version: '1.5.1',
     date: '2026-07-09',
     latest: true,
+    groups: [
+      {
+        label: 'fix',
+        items: [
+          'Schema generator now supports inline annotations: `field: string; // @unique` — warns but works',
+          'Schema generator handles stacked `//` annotation comments above a field (multiple lines)',
+          'Schema generator no longer errors on `//` comment lines inside interface bodies',
+          'Inline annotations and stacked comments properly separated with `;` — no merged metadata keys',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.5.0',
+    date: '2026-07-09',
+    latest: false,
     groups: [
       {
         label: 'feat',
