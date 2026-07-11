@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.3.1
+- Version: 1.5.1
 
 ---
 
@@ -146,8 +146,19 @@ interface User {
 | @random:number(N) | alternate syntax for @random:number:N |
 | @relation ...     | declares a relation (see Relations section) |
 | @relationship ... | alias for @relation |
+| @mask:preset      | masks output on read (ssn, creditcard, email, phone, showFirst, showLast, char, pattern) |
+| @omitdb           | excludes field from DB — no column created, excluded from all read/write |
+| @omitjson         | stores in DB but strips from read results unless explicitly .select()ed |
+| @omitmigrate      | migrator ignores column — manual DDL; field still usable in queries |
 
-Annotations placed on the line directly above the field. Both `@`-prefixed and bare variants are accepted.
+Annotations placed on the line directly above the field, or inline after the semicolon on the same line:
+```typescript
+// @unique
+email: string;    // stacked annotation (preceding comment line)
+
+field: string; // @unique    // inline annotation (same line, after field declaration)
+```
+Both `@`-prefixed and bare variants are accepted. Inline annotations (after the field) are extracted from trailing `//` comments and merged with any preceding stacked annotations.
 
 ### Automatic columns
 
@@ -923,7 +934,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.3.1)
+## package.json exports map (v1.5.1)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -966,11 +977,6 @@ export default orm;
 
 These annotations are being implemented in batches. All use zero external dependencies.
 
-### Omit / Visibility
-- `@omitdb` — No DB column, excluded from insert/update
-- `@omitjson` — Stored in DB, stripped from all read results unless explicitly `.select()`ed
-- `@omitmigrate` — Schema-only, migrator never creates/alters the column
-
 ### Validation (zero-dep regex-based)
 - `@email` — Validate email format
 - `@url` — Validate URL format
@@ -986,8 +992,7 @@ These annotations are being implemented in batches. All use zero external depend
 - `@token` — crypto.randomBytes token generation with prefix/encoding options
 - `@secret` — Composite: @hash + @omitjson + log-masking (for API keys, client secrets)
 
-### Masking & Sanitization
-- `@mask` — Output masking (creditcard, ssn, email, phone, showFirst, showLast, pattern). Bypass with `.withoutMasking()`
+### Sanitization
 - `@sanitize` — Input sanitization (trim, lower, upper, stripTags, escape)
 
 ### Expiry & Audit
@@ -1009,5 +1014,5 @@ These annotations are being implemented in batches. All use zero external depend
 
 ---
 
-*SlintORM v1.3.1 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.5.1 — https://github.com/emeraldlinks/slintorm*
 
