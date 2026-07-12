@@ -3,7 +3,7 @@ import CodeBlock from '@/components/CodeBlock';
 
 export const metadata = {
   title: 'Validation — SlintORM',
-  description: "SlintORM validation — FieldRules, validate(), check(), ValidationError, and the Validator class.",
+  description: "SlintORM validation — FieldRules, validate(), check(), ValidationError, annotation-based validation (@email, @url, @uuid, @phone, @min, @max, @minLength, @maxLength, @pattern).",
   alternates: { canonical: '/docs/validation' },
 };
 
@@ -124,6 +124,44 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ id: user.id }, { status: 201 });
 }`;
 
+const annotationExample = `// Annotations go in interface comments — validated automatically on insert/update
+export interface User {
+  id?: number;
+  // @minLength:2;@maxLength:100
+  name: string;
+  // @email
+  email?: string;
+  // @phone
+  phone?: string;
+  // @url
+  url?: string;
+  // @uuid
+  uuid?: string;
+  // @min:0;@max:100
+  score?: number;
+  // @pattern:^[A-Za-z0-9_-]+$
+  status?: string;
+}
+
+// These will throw ValidationError automatically:
+await User.insert({ name: "X", email: "bad" });
+// → ValidationError: name must be at least 2 characters, email must be a valid email address
+
+// The manual validate()/check() methods still work too:
+await User.check(data, { email: { email: true } });`;
+
+const annotationRules = [
+  { rule: '@email', type: 'boolean', desc: 'Must be a valid email address' },
+  { rule: '@url', type: 'boolean', desc: 'Must be a valid URL (http/https)' },
+  { rule: '@uuid', type: 'boolean', desc: 'Must be a valid UUID v4' },
+  { rule: '@phone', type: 'boolean', desc: 'Must be a valid phone number (7-15 digits)' },
+  { rule: '@min:N', type: 'number', desc: 'Numeric value must be >= N' },
+  { rule: '@max:N', type: 'number', desc: 'Numeric value must be <= N' },
+  { rule: '@minLength:N', type: 'number', desc: 'String must be at least N characters' },
+  { rule: '@maxLength:N', type: 'number', desc: 'String must be at most N characters' },
+  { rule: '@pattern:regex', type: 'RegExp', desc: 'Value must match the regular expression' },
+];
+
 const rules = [
   { rule: 'required', type: 'boolean', desc: 'Field must be present and non-empty' },
   { rule: 'email', type: 'boolean', desc: 'Must be a valid email address' },
@@ -162,6 +200,36 @@ export default function ValidationPage() {
           </thead>
           <tbody>
             {rules.map(r => (
+              <tr key={r.rule}>
+                <td><code>{r.rule}</code></td>
+                <td><code style={{ fontSize: '0.8rem', color: '#60A5FA' }}>{r.type}</code></td>
+                <td style={{ color: 'var(--color-fg-subtle)' }}>{r.desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Annotation-based validation</h2>
+      <p style={{ marginBottom: '0.75rem' }}>
+        Validation annotations can be placed on model interface fields. These run <strong>automatically</strong>
+        during <code>insert()</code>, <code>update()</code>, <code>insertMany()</code>, and batch operations — no
+        manual <code>validate()</code> call required. Annotations are parsed from the <code>// @key:value</code>
+        comments in your interface source files by the schema generator.
+      </p>
+      <CodeBlock code={annotationExample} />
+
+      <div style={{ border: '1px solid var(--color-border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '2rem' }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Annotation</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {annotationRules.map(r => (
               <tr key={r.rule}>
                 <td><code>{r.rule}</code></td>
                 <td><code style={{ fontSize: '0.8rem', color: '#60A5FA' }}>{r.type}</code></td>
