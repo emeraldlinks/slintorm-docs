@@ -60,7 +60,7 @@ if (created) {
 await record.update({ lastLoginAt: new Date().toISOString() });`;
 
 const findOrCreateNoDefaults = `// Defaults can be omitted if filter already has all required fields
-const { record, created } = await User.findOrCreate(
+const { record: r, created: c } = await User.findOrCreate(
   { email: 'alice@example.com', name: 'Alice', role: 'user' }
 );
 // Uses the filter object itself as the insert data`;
