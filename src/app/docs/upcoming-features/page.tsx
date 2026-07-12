@@ -195,6 +195,7 @@ console.log(record.ssn); // "123-45-6789"`,
       },
       {
         name: '@token',
+        shipped: true,
         summary: "Auto-generate cryptographically secure random tokens on insert using crypto.randomBytes. Configurable byte length, prefix, and encoding. Combine with @hash for API key patterns.",
         scenario: `You're launching an API platform. Every new team gets an API key like "sk_live_a1b2c3d4e5f6...". The key must be:
 1. Generated with cryptographic randomness (not Math.random)
