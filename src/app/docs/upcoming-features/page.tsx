@@ -79,6 +79,7 @@ Mark it @omitmigrate. SlintORM treats it as read-only at the migration level: th
     items: [
       {
         name: '@email / @url / @uuid / @phone',
+        shipped: true,
         summary: "Built-in format validators that run on insert/update before the SQL query is executed. Zero dependencies — regex only.",
         scenario: `Your signup form accepts email, website, and phone. You want to validate these at the ORM layer so every code path (REST API, GraphQL, admin panel, CLI seed scripts) gets the same validation.
 
@@ -97,6 +98,7 @@ Simply annotate the fields. On every insert and update, SlintORM checks the form
       },
       {
         name: '@min:N / @max:N / @minLength:N / @maxLength:N',
+        shipped: true,
         summary: "Numeric range and string length validation at the ORM layer.",
         scenario: `Your Product model has a price field that must be between 0.01 and 9999.99, and a description that must be at least 10 characters but no more than 2000.
 
@@ -114,6 +116,7 @@ With @min/@max on price and @minLength/@maxLength on description, every code pat
       },
       {
         name: '@pattern:regex',
+        shipped: true,
         summary: "Custom regex validation — for formats not covered by built-in validators.",
         scenario: `You store Slack channel names like "#general", "#random". They must start with "#" and be 1-80 lowercase alphanumeric characters with hyphens. No built-in validator covers this.
 
@@ -589,7 +592,7 @@ export default function UpcomingFeaturesPage() {
         fontSize: '0.875rem',
       }}>
         <strong style={{ color: '#22C55E', fontFamily: 'var(--font-mono)' }}>
-          ✓ Omit family and @mask shipped
+          ✓ Omit family, @mask, and validation annotations shipped
         </strong>
         <p style={{ marginTop: '0.25rem', color: 'var(--color-fg-muted)' }}>
           Remaining features are being implemented in batches of 3 per day.
