@@ -42,7 +42,7 @@ if (status === 'inserted') {
 } else {
   const user = await User.get({ email: 'joe@example.com' });
   console.log(user!.name); // "Joseph"
-}
+}`;
 
 const findOrCreateBasic = `// findOrCreate(filter, defaults) — returns { record, created }
 const { record, created } = await User.findOrCreate(
