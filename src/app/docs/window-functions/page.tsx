@@ -8,10 +8,10 @@ export const metadata = {
 };
 
 const rowNumberBasic = `// window(function, overClause) — fluent window function API
-// Available on AdvancedQueryBuilder (.advanced())
+// Available on query() — inherits AdvancedQueryBuilder methods
 
 const results = await User.query()
-  .advanced()
+
   .window(
     'ROW_NUMBER()',
     'PARTITION BY department ORDER BY salary DESC'
@@ -26,7 +26,7 @@ const results = await User.query()
 
 const rankFunction = `// RANK() — same rank for ties, gaps in sequence
 const ranked = await Product.query()
-  .advanced()
+
   .window(
     'RANK()',
     'PARTITION BY category ORDER BY rating DESC'
@@ -41,7 +41,7 @@ const ranked = await Product.query()
 
 const denseRank = `// DENSE_RANK() — same rank for ties, no gaps
 const ranked = await Product.query()
-  .advanced()
+
   .window(
     'DENSE_RANK()',
     'PARTITION BY category ORDER BY rating DESC'
@@ -53,7 +53,7 @@ const ranked = await Product.query()
 
 const ntile = `// NTILE(n) — distributes rows into n buckets
 const quartiles = await Student.query()
-  .advanced()
+
   .window(
     'NTILE(4)',
     'ORDER BY score DESC'
@@ -65,7 +65,7 @@ const quartiles = await Student.query()
 
 const runningTotal = `// Running total with SUM() OVER()
 const totals = await Order.query()
-  .advanced()
+
   .window(
     'SUM(amount)',
     'PARTITION BY customerId ORDER BY createdAt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW'
@@ -82,7 +82,7 @@ const totals = await Order.query()
 
 const lagLead = `// LAG() / LEAD() — access adjacent rows
 const withPrev = await Sales.query()
-  .advanced()
+
   .window(
     'LAG(amount, 1, 0)',
     'PARTITION BY productId ORDER BY month ASC'
@@ -100,7 +100,7 @@ const withPrev = await Sales.query()
 
 const firstValue = `// FIRST_VALUE() / LAST_VALUE() — first/last in window frame
 const withFirst = await Employee.query()
-  .advanced()
+
   .window(
     'FIRST_VALUE(name)',
     'PARTITION BY department ORDER BY hireDate ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING'
@@ -121,8 +121,8 @@ const compatibility = `// Driver compatibility notes:
 //
 // Always verify your database version before relying on window functions.
 //
-// Tip: Use .advanced() to access the window() method
-//      const result = await Model.query().advanced().window(...).get();`;
+// Tip: .window() is available on any query builder
+//      const result = await Model.query().window(...).get();`;
 
 export default function WindowFunctionsPage() {
   return (
@@ -130,8 +130,8 @@ export default function WindowFunctionsPage() {
       <h1 style={{ marginBottom: '0.5rem' }}>Window Functions</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
         SlintORM supports SQL window functions through the{' '}
-        <code>window(function, overClause)</code> method on{' '}
-        <code>AdvancedQueryBuilder</code>. Window functions perform
+        <code>window(function, overClause)</code> method available on{' '}
+        any <code>model.query()</code>. Window functions perform
         calculations across a set of rows related to the current row, without
         collapsing them into a group.
       </p>

@@ -76,7 +76,7 @@ const orm = new ORMManager<ModelMap>({
 await orm.migrate();
 
 // Access all models through the typed db store
-export const db = orm.db;
+export const db = orm.DB;
 
 // Usage:
 // db.User.insert({ email: 'a@b.com', name: 'Alice' })
@@ -122,10 +122,7 @@ const methods = [
   { name: 'restore(filter)', desc: 'Un-delete soft-deleted rows' },
   { name: 'validate(data, rules)', desc: 'Validate data, throws ValidationError on failure' },
   { name: 'check(data, rules)', desc: 'Validate data, returns error map or null' },
-  { name: 'query()', desc: 'Returns a QueryBuilder<T> for fluent query building' },
-  { name: 'advanced()', desc: 'Returns an AdvancedQueryBuilder<T> (aggregates, window functions)' },
-  { name: 'softDelete()', desc: 'Returns a SoftDeleteQueryBuilder<T> (withTrashed, onlyTrashed)' },
-  { name: 'extended()', desc: 'Returns an ExtendedQueryBuilder<T> with scope() support' },
+  { name: 'query()', desc: 'Returns an ExtendedQueryBuilder<T> — all builder features (where, joins, aggregates, window, scopes, soft delete, etc.)' },
 ];
 
 export default function DefineModelPage() {

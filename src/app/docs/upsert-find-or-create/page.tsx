@@ -31,13 +31,18 @@ const result = await Booking.upsert(
 );
 // Generates: ON CONFLICT (roomId, date) DO UPDATE SET ...`;
 
-const upsertReturnEntity = `// With .returning() — get the entity back
-const user = await User.upsert(
+const upsertReturnEntity = `// upsert returns "inserted" | "updated" — use get() to fetch afterward
+const status = await User.upsert(
   { email: 'joe@example.com' },
   { name: 'Joseph' }
-).returning();
+);
 
-console.log(user.name); // "Joseph" — full entity with .update(), .delete()`; // eslint-disable-line no-unused-expressions
+if (status === 'inserted') {
+  console.log('Created new user');
+} else {
+  const user = await User.get({ email: 'joe@example.com' });
+  console.log(user!.name); // "Joseph"
+}
 
 const findOrCreateBasic = `// findOrCreate(filter, defaults) — returns { record, created }
 const { record, created } = await User.findOrCreate(
@@ -78,14 +83,18 @@ const user = await User.firstOrInit(
   { email: 'joe@example.com' }
 );
 
-if (user.isNew) {
-  // Was not found — user is an unsaved instance
-  // You can modify it and call .update() to persist
-  user.name = 'Joe';
-  await user.update();  // inserts the row
-} else {
+if (user) {
   console.log('Found:', user.name);
-}`;
+}
+
+// If not found: returns a non-persisted instance with entity methods
+const newUser = await User.firstOrInit(
+  { email: 'newuser@example.com' },
+  { name: 'New User' }
+);
+// newUser has .update(), .delete(), .refresh(), .toJSON()
+// Call .update() to persist (inserts since it has no PK)
+await newUser!.update({ name: 'New User' });
 
 const firstOrInitDefaults = `// With defaults — merges defaults onto the unsaved instance
 const user = await User.firstOrInit(
@@ -93,13 +102,11 @@ const user = await User.firstOrInit(
   { name: 'New User', role: 'user', active: true }
 );
 
-console.log(user.name);   // "New User"
-console.log(user.role);   // "user"
-console.log(user.isNew);  // true — not persisted yet
+console.log(user!.name);   // "New User"
+console.log(user!.role);   // "user"
 
-// Persist it
-await user.update();
-console.log(user.isNew);  // false — now saved`;
+// Persist it — inserts a new row since there's no PK
+await user!.update();`;
 
 export default function UpsertFindOrCreatePage() {
   return (
@@ -125,10 +132,10 @@ export default function UpsertFindOrCreatePage() {
       <h3 style={{ marginBottom: '0.75rem', marginTop: '1.5rem' }}>Multi-column conflicts</h3>
       <CodeBlock code={upsertMultiField} />
 
-      <h3 style={{ marginBottom: '0.75rem', marginTop: '1.5rem' }}>Returning the entity</h3>
+      <h3 style={{ marginBottom: '0.75rem', marginTop: '1.5rem' }}>Get the entity back</h3>
       <p style={{ marginBottom: '0.75rem' }}>
-        Chain <code>.returning()</code> to get the full entity back from an
-        upsert instead of just the status string.
+        <code>upsert()</code> returns <code>&quot;inserted&quot; | &quot;updated&quot;</code>.
+        To get the full entity back, call <code>.get()</code> with the same filter afterward.
       </p>
       <CodeBlock code={upsertReturnEntity} />
 
@@ -152,9 +159,9 @@ export default function UpsertFindOrCreatePage() {
       <p style={{ marginBottom: '0.75rem' }}>
         <code>firstOrInit(filter, defaults?)</code> returns the first matching
         record, or creates an <strong>unsaved</strong> instance (not persisted).
-        The returned entity has a <code>isNew</code> property set to{' '}
-        <code>true</code> when it has not been saved. Call{' '}
-        <code>.update()</code> on it to persist.
+        The returned entity has entity methods (<code>.update()</code>, <code>.delete()</code>,
+        <code>.refresh()</code>, <code>.toJSON()</code>) attached. If the entity was not found,
+        calling <code>.update()</code> on the unsaved instance will insert a new row.
       </p>
       <CodeBlock code={firstOrInitFound} />
 

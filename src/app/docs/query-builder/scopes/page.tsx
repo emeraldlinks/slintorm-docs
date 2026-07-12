@@ -7,7 +7,7 @@ export const metadata = {
   alternates: { canonical: '/docs/query-builder/scopes' },
 };
 
-const extendedClass = `// ExtendedQueryBuilder<T> — returned by model.extended()
+const extendedClass = `// ExtendedQueryBuilder<T> — returned by model.query()
 // Extends QueryBuilder<T> with one additional method: scope()
 //
 // This means ALL base QueryBuilder methods are available:
@@ -23,7 +23,7 @@ const extendedClass = `// ExtendedQueryBuilder<T> — returned by model.extended
 // Plus:
 //   .scope(fn)      — add a reusable, lazily-applied query fragment
 
-const users = await User.extended()
+const users = await User.query()
   .where('active', '=', true)     // base QB method
   .preload('posts')               // base QB method
   .scope(q => q.whereNotNull('verifiedAt'))  // ExtendedQueryBuilder only
@@ -34,7 +34,7 @@ const users = await User.extended()
 const basicScope = `// .scope(fn) — reusable, composable query fragment
 // Scopes are lazy — applied just before SQL is built
 
-const activeUsers = await User.extended()
+const activeUsers = await User.query()
   .scope(q => q.where('active', '=', true))
   .get();`;
 
@@ -55,7 +55,7 @@ export const recentScope = (q: ExtendedQueryBuilder<any>) =>
 // Use in queries:
 import { activeScope, adminScope } from './scopes';
 
-const activeAdmins = await User.extended()
+const activeAdmins = await User.query()
   .scope(activeScope)
   .scope(adminScope)
   .get();`;
@@ -63,7 +63,7 @@ const activeAdmins = await User.extended()
 const composedScopes = `// Composing multiple scopes
 // Each .scope() call adds its conditions — all are AND-ed
 
-const results = await User.extended()
+const results = await User.query()
   .scope(q => q.where('active', '=', true))
   .scope(q => q.where('role', '=', 'admin'))
   .scope(q => q.whereNotNull('verifiedAt'))
@@ -81,7 +81,7 @@ const withRole = (role: string) =>
 const createdAfter = (date: string) =>
   (q: ExtendedQueryBuilder<any>) => q.where('createdAt', '>', date);
 
-const users = await User.extended()
+const users = await User.query()
   .scope(withRole('admin'))
   .scope(createdAfter('2024-01-01'))
   .orderBy('name', 'ASC')
@@ -90,7 +90,7 @@ const users = await User.extended()
 const scopeWithPreload = `// Scopes work alongside ALL other QB methods
 // including preload, join, paginate
 
-const publishedPostsForTeam = await Post.extended()
+const publishedPostsForTeam = await Post.query()
   .scope(q => q.where('published', '=', true))
   .scope(q => q.whereNotNull('publishedAt'))
   .preload('user')
@@ -105,7 +105,7 @@ const publishedPostsForTeam = await Post.extended()
 const lazyExplained = `// Scopes are lazy — they run just before .buildSql() is called
 // This means you can add scopes and other clauses in any order
 
-const q = User.extended();
+const q = User.query();
 
 // Interleave scopes and regular clauses — all resolved at build time
 q.scope(q => q.where('active', '=', true));
@@ -122,25 +122,16 @@ const standaloneValidator = `// Validator<T> — standalone class exported from 
 
 import { Validator } from 'slintorm';
 
-const validator = new Validator<{ email: string; age: number }>();
+const validator = new Validator<{ email: string; age: number }>({
+  email: { required: true, email: true },
+  age:   { required: true, min: 18 },
+});
 
-// validate() — throws ValidationError
-await validator.validate(
-  { email: 'bad', age: 15 },
-  {
-    email: { required: true, email: true },
-    age:   { required: true, min: 18 },
-  }
-);
+// validate() — throws ValidationError on invalid data
+validator.validate({ email: 'bad', age: 15 });
 
 // check() — returns error map or null
-const errors = await validator.check(
-  { email: 'joe@example.com', age: 25 },
-  {
-    email: { required: true, email: true },
-    age:   { required: true, min: 18 },
-  }
-);
+const errors = validator.check({ email: 'joe@example.com', age: 25 });
 // null — all valid`;
 
 export default function ScopesPage() {
@@ -148,7 +139,7 @@ export default function ScopesPage() {
     <DocLayout>
       <h1 style={{ marginBottom: '0.5rem' }}>Scopes & ExtendedQueryBuilder</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
-        <code>model.extended()</code> returns an <code>ExtendedQueryBuilder&lt;T&gt;</code> —
+        <code>model.query()</code> returns an <code>ExtendedQueryBuilder&lt;T&gt;</code> —
         a full <code>QueryBuilder&lt;T&gt;</code> with one additional method: <code>.scope(fn)</code>.
         Every base QB method (<code>where</code>, <code>preload</code>, <code>orderBy</code>, etc.) is available.
       </p>

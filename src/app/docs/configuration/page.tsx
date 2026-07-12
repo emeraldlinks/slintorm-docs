@@ -80,8 +80,8 @@ export const orm = new ORMManager<ModelMap>({
   schema,   // skips filesystem scan on startup; required on edge runtimes
 });
 
-// orm.db.User.insert(...)  — fully typed
-export const db = orm.db;`;
+// orm.DB.User.insert(...)  — fully typed
+export const db = orm.DB;`;
 
 const options = [
   { key: 'driver', type: '"sqlite" | "postgres" | "mysql" | "mongodb"', desc: 'Required. Database driver to use.' },

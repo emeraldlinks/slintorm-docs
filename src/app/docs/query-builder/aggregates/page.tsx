@@ -10,7 +10,7 @@ export const metadata = {
 const countAggregate = `// .countAggregate() — adds COUNT(*) AS count to SELECT
 // Different from ModelAPI.count() which returns a scalar number
 
-const result = await Post.advanced()
+const result = await Post.query()
   .countAggregate()
   .groupBy('userId')
   .get();
@@ -23,14 +23,14 @@ result.forEach(row => {
 const sumAvg = `// .sum(column) / .avg(column)
 // Returns rows with the aggregate value added
 
-const totals = await Order.advanced()
+const totals = await Order.query()
   .sum('amount')
   .groupBy('userId')
   .get();
 
 // totals[0].sum_amount
 
-const avgRatings = await Review.advanced()
+const avgRatings = await Review.query()
   .avg('rating')
   .groupBy('productId')
   .get();
@@ -39,7 +39,7 @@ const avgRatings = await Review.advanced()
 
 const minMax = `// .min(column) / .max(column)
 
-const extremes = await Product.advanced()
+const extremes = await Product.query()
   .min('price')
   .max('price')
   .groupBy('categoryId')
@@ -49,7 +49,7 @@ const extremes = await Product.advanced()
 // extremes[0].max_price`;
 
 const groupBy = `// .groupBy(...columns)
-const postCounts = await Post.advanced()
+const postCounts = await Post.query()
   .select('userId')
   .countAggregate()
   .groupBy('userId')
@@ -59,7 +59,7 @@ const postCounts = await Post.advanced()
 const having = `// .having(rawSql, params?)
 // Filters groups after aggregation
 
-const activeUsers = await Post.advanced()
+const activeUsers = await Post.query()
   .select('userId')
   .countAggregate()
   .groupBy('userId')
@@ -68,19 +68,19 @@ const activeUsers = await Post.advanced()
 
 const distinct = `// .distinct(...columns) — SELECT DISTINCT
 
-const roles = await User.advanced()
+const roles = await User.query()
   .distinct('role')
   .get();
 // Returns unique role values
 
-const pairs = await Post.advanced()
+const pairs = await Post.query()
   .distinct('userId', 'categoryId')
   .get();`;
 
 const windowFn = `// .window(fn, over) — window function expression
 // Added to SELECT as: fn OVER (over) AS window_result
 
-const ranked = await Post.advanced()
+const ranked = await Post.query()
   .select('id', 'title', 'userId', 'createdAt')
   .window(
     'ROW_NUMBER()',
@@ -91,7 +91,7 @@ const ranked = await Post.advanced()
 // ranked[0].window_result — row number within each user partition
 
 // Running total example
-const runningTotal = await Order.advanced()
+const runningTotal = await Order.query()
   .select('id', 'userId', 'amount', 'createdAt')
   .window(
     'SUM(amount)',
@@ -104,7 +104,7 @@ export default function AggregatesPage() {
     <DocLayout>
       <h1 style={{ marginBottom: '0.5rem' }}>Aggregates</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
-        Aggregate methods are available via <code>model.advanced()</code> which returns an
+        Aggregate methods are available via <code>model.query()</code> which returns an
         <code>AdvancedQueryBuilder&lt;T&gt;</code>. This extends the base query builder with
         <code>countAggregate</code>, <code>sum</code>, <code>avg</code>, <code>min</code>,
         <code>max</code>, <code>groupBy</code>, <code>having</code>, <code>distinct</code>,

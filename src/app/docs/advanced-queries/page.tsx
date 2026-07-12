@@ -142,16 +142,13 @@ console.log(query.params);
 
 // Useful for debugging, logging, or manual query inspection`;
 
-const dryRunInsert = `// dryRun() also works on insert/update/delete
-const insertQuery = User.insert({
-  email: 'test@example.com',
-  name: 'Test',
-}).dryRun();
+const dryRunInsert = `// ToSql() — inspect generated SQL without executing
+const query = User.query()
+  .where('email', '=', 'test@example.com')
+  .toSql();
 
-console.log(insertQuery.sql);
-// "INSERT INTO users (email, name, createdAt, updatedAt) VALUES (?, ?, ?, ?)"
-console.log(insertQuery.params);
-// ['test@example.com', 'Test', ...]`;
+console.log(query.sql);
+console.log(query.params);
 
 export default function AdvancedQueriesPage() {
   return (

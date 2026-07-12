@@ -8,21 +8,20 @@ export const metadata = {
   alternates: { canonical: '/docs/query-builder' },
 };
 
-const entryPoints = `// Four builder entry points — each returns a different builder class
+const entryPoints = `// A single entry point — model.query() returns ExtendedQueryBuilder<T>
+// which inherits ALL builder capabilities through the chain:
+//
+//   QueryBuilder<T>               — basic SQL (where, joins, pagination, etc.)
+//     └─ AdvancedQueryBuilder<T>   — CTE, UNION, window functions, locks, group/having
+//          └─ SoftDeleteQueryBuilder<T>  — withTrashed(), onlyTrashed()
+//               └─ ExtendedQueryBuilder<T>  — scope()
+//
+// model.query() returns the bottom of the chain, so everything is available.
 
-// QueryBuilder<T> — base, covers the majority of queries
-model.query()
-
-// AdvancedQueryBuilder<T> — extends QueryBuilder with aggregates,
-// window functions, UNION, RIGHT/FULL OUTER joins, subqueries
-model.advanced()
-
-// SoftDeleteQueryBuilder<T> — extends QueryBuilder with
-// withTrashed() and onlyTrashed() for soft-deleted rows
-model.softDelete()
-
-// ExtendedQueryBuilder<T> — extends QueryBuilder with scope()
-model.extended()`;
+await model.query()
+  .where(...)
+  .orderBy(...)
+  .get();`;
 
 const terminalMethods = `// Terminal methods — execute the query and return results
 
@@ -160,8 +159,9 @@ export default function QueryBuilderIndexPage() {
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>Builder entry points</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        Call one of four methods on any model to get a builder. Each returns a different class
-        with its own set of additional methods on top of the base <code>QueryBuilder&lt;T&gt;</code>.
+        Call <code>model.query()</code> on any model to get a fully capable builder. The single
+        <code>query()</code> method returns an <code>ExtendedQueryBuilder&lt;T&gt;</code> which
+        inherits all builder capabilities through the inheritance chain.
       </p>
       <CodeBlock code={entryPoints} />
 

@@ -93,7 +93,7 @@ export default {
     orm.withContext({ requestId: request.headers.get('cf-ray') });
 
     try {
-      const users = await orm.db.User.findAll();
+      const users = await orm.DB.User.getAll();
       return Response.json({ users });
     } finally {
       orm.clearContext();

@@ -97,7 +97,7 @@ export default function TransactionsPage() {
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>orm.transaction()</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        The callback receives a <code>trx</code> object with the same model API as <code>orm.db</code>.
+        The callback receives a <code>trx</code> object with the same model API as <code>orm.DB</code>.
         On success the transaction is committed. Any thrown error triggers automatic rollback.
       </p>
       <CodeBlock code={transactionBasic} />

@@ -95,7 +95,7 @@ const orm = new ORMManager<ModelMap>({
 
 await orm.migrate();
 
-export const db = orm.db;
+export const db = orm.DB;
 // db.User  — ModelAPI<User>
 // db.Post  — ModelAPI<Post>
 // TypeScript knows every field on every model`;

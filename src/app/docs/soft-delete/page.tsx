@@ -34,19 +34,19 @@ await User.delete({ id: 42 });
 const user = await User.get({ id: 42 }); // null`;
 
 const withTrashed = `// .withTrashed() — include soft-deleted rows
-const allUsers = await User.softDelete()
+const allUsers = await User.query()
   .withTrashed()
   .get();
 // SELECT * FROM users (no deletedAt filter)
 
 // Combine with other clauses
-const suspendedAdmins = await User.softDelete()
+const suspendedAdmins = await User.query()
   .withTrashed()
   .where('role', '=', 'admin')
   .get();`;
 
 const onlyTrashed = `// .onlyTrashed() — return only soft-deleted rows
-const deleted = await User.softDelete()
+const deleted = await User.query()
   .onlyTrashed()
   .get();
 // SELECT * FROM users WHERE deletedAt IS NOT NULL`;
@@ -61,7 +61,7 @@ const user = await User.get({ id: 42 }); // found`;
 const hardDelete = `// To permanently remove a soft-delete row,
 // use the query builder with whereRaw to bypass the auto-filter
 
-await User.softDelete()
+await User.query()
   .withTrashed()
   .where('id', '=', 42)
   // No direct hardDelete method — use deleteMany after withTrashed
@@ -88,7 +88,7 @@ export default function SoftDeletePage() {
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>withTrashed</h2>
       <p style={{ marginBottom: '0.75rem' }}>
-        Access via <code>model.softDelete()</code> which returns a <code>SoftDeleteQueryBuilder&lt;T&gt;</code>.
+        Use <code>model.query().withTrashed()</code> to include soft-deleted rows.
       </p>
       <CodeBlock code={withTrashed} />
 

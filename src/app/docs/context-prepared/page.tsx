@@ -19,7 +19,7 @@ async function handleRequest(req: Request) {
   });
 
   try {
-    const users = await orm.db.User.findAll();
+    const users = await orm.DB.User.getAll();
     return Response.json(users);
   } finally {
     // Always clear to prevent leaking across requests
@@ -53,7 +53,7 @@ orm.preparedMode(true);
 console.log('Prepared mode:', orm.isPreparedMode()); // true
 
 // Queries are now cached as prepared statements
-const users = await orm.db.User.findAll({ age: { gt: 18 } });
+const users = await orm.DB.User.query().where("age", ">", 18).get();
 
 // Disable when done
 orm.preparedMode(false);`;
@@ -66,7 +66,7 @@ const preparedCache = `// Internal LRU cache behavior
 for (const id of userIds) {
   // With prepared mode on, the SQL is compiled once
   // and only the parameter changes on each iteration
-  const user = await orm.db.User.findById(id);
+  const user = await orm.DB.User.get({ id });
 }`;
 
 export default function ContextPreparedPage() {

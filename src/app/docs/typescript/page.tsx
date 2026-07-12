@@ -31,10 +31,7 @@ interface ModelAPI<T> {
   restore(filter: Partial<T>): Promise<void>;
   validate(data: Partial<T>, rules: FieldRules<T>): Promise<void>;
   check(data: Partial<T>, rules: FieldRules<T>): Promise<Record<string, string> | null>;
-  query(): QueryBuilder<T>;
-  advanced(): AdvancedQueryBuilder<T>;
-  softDelete(): SoftDeleteQueryBuilder<T>;
-  extended(): ExtendedQueryBuilder<T>;
+  query(): ExtendedQueryBuilder<T>;
 }`;
 
 const entityWithUpdate = `// EntityWithUpdate<T>
@@ -68,7 +65,7 @@ const orm = new ORMManager<ModelMap>({
   modelMap: {} as ModelMap,
 });
 
-export const db: DBStore<ModelMap> = orm.db;
+export const db: DBStore<ModelMap> = orm.DB;
 
 // Fully typed:
 db.User.insert(...)      // knows User fields
@@ -190,8 +187,8 @@ const orm = new ORMManager<ModelMap>({
   modelMap: {} as ModelMap,
 });
 
-// orm.db is typed as DBStore<ModelMap>
-// orm.db.User, orm.db.Post, etc. are all fully typed`;
+// orm.DB is typed as DBStore<ModelMap>
+// orm.DB.User, orm.DB.Post, etc. are all fully typed`;
 
 export default function TypeScriptPage() {
   return (

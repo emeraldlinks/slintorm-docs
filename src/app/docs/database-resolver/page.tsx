@@ -50,8 +50,8 @@ const User = orm.defineModel<User>('users', 'User');
 const AnalyticsUser = User.useDb('analytics');
 
 // Now queries on AnalyticsUser run against 'analytics' database
-const localUsers = await User.findAll();
-const analyticsUsers = await AnalyticsUser.findAll();`;
+const localUsers = await User.getAll();
+const analyticsUsers = await AnalyticsUser.getAll();`;
 
 const multiTenantExample = `// Multi-tenant routing — one database per tenant
 const databases = ['tenant_a', 'tenant_b', 'tenant_c'];
@@ -64,8 +64,8 @@ for (const tenant of databases) {
 }
 
 async function getUsersForTenant(tenantId: string) {
-  const TenantBoundUser = orm.db.User.useDb(tenantId);
-  return TenantBoundUser.findAll();
+  const TenantBoundUser = orm.DB.User.useDb(tenantId);
+  return TenantBoundUser.getAll();
 }`;
 
 const readWriteSplit = `// Read/write splitting
@@ -84,7 +84,7 @@ const UserRead = User.useDb('replica');
 
 // Writes go to primary, reads go to replica
 await User.insert({ name: 'Alice' });        // primary
-const users = await UserRead.findAll();       // replica`;
+const users = await UserRead.getAll();       // replica`;
 
 export default function DatabaseResolverPage() {
   return (

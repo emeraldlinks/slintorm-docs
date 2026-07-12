@@ -24,16 +24,16 @@ const posts = await Post.query()
   .get();`;
 
 const rightJoin = `// .rightJoin(table, left, op, right) — RIGHT JOIN
-// Available via advanced() (AdvancedQueryBuilder)
-const data = await Post.advanced()
+// Available on query() — inherits AdvancedQueryBuilder methods
+const data = await Post.query()
   .rightJoin('users', 'posts.userId', '=', 'users.id')
   .select('users.name', 'posts.title')
   .get();`;
 
 const fullOuter = `// .fullOuterJoin(table, left, op, right) — FULL OUTER JOIN
-// Available via advanced() (AdvancedQueryBuilder)
+// Available on query() — inherits AdvancedQueryBuilder methods
 // Note: SQLite does not support FULL OUTER JOIN natively
-const data = await Post.advanced()
+const data = await Post.query()
   .fullOuterJoin('users', 'posts.userId', '=', 'users.id')
   .get();`;
 
@@ -74,7 +74,7 @@ export default function JoinsPage() {
       <h1 style={{ marginBottom: '0.5rem' }}>Joins</h1>
       <p style={{ marginBottom: '2rem', fontSize: '1.05rem' }}>
         SlintORM supports INNER, LEFT, RIGHT, and FULL OUTER joins.
-        RIGHT and FULL OUTER are available via <code>model.advanced()</code>.
+        RIGHT and FULL OUTER are available via <code>model.query()</code>.
       </p>
 
       <h2 style={{ marginBottom: '0.75rem', marginTop: '2rem' }}>INNER join</h2>
