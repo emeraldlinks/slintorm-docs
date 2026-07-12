@@ -138,8 +138,6 @@ console.log(query.sql);
 // "SELECT * FROM users WHERE role = ? AND verifiedAt IS NOT NULL ORDER BY name ASC LIMIT ?"
 
 console.log(query.params);
-// ['admin', 10]
-
 // Useful for debugging, logging, or manual query inspection`;
 
 const dryRunInsert = `// ToSql() — inspect generated SQL without executing
@@ -148,7 +146,7 @@ const query = User.query()
   .toSql();
 
 console.log(query.sql);
-console.log(query.params);
+console.log(query.params);`;
 
 export default function AdvancedQueriesPage() {
   return (

@@ -94,7 +94,7 @@ const newUser = await User.firstOrInit(
 );
 // newUser has .update(), .delete(), .refresh(), .toJSON()
 // Call .update() to persist (inserts since it has no PK)
-await newUser!.update({ name: 'New User' });
+await newUser!.update({ name: 'New User' });`;
 
 const firstOrInitDefaults = `// With defaults — merges defaults onto the unsaved instance
 const user = await User.firstOrInit(
