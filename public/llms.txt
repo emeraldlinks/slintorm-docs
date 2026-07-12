@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.5.1
+- Version: 1.5.2
 
 ---
 
@@ -945,7 +945,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.5.1)
+## package.json exports map (v1.5.2)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -1025,5 +1025,5 @@ These annotations are being implemented in batches. All use zero external depend
 
 ---
 
-*SlintORM v1.5.1 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.5.2 — https://github.com/emeraldlinks/slintorm*
 
