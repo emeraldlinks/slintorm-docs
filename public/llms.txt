@@ -768,6 +768,17 @@ npx slintorm --help             # print all commands
 
 Config resolution order (highest to lowest): CLI flags > slintorm.config.js > package.json#slintorm
 
+### Environment variables
+
+The CLI auto-loads all `.env*` files from the project root before evaluating the config. Priority (lowest → highest): `.env` < `.env.{NODE_ENV}` < `.env.local`. Shell-exported variables always win.
+
+```typescript
+// slintorm.config.js — process.env is populated before this runs
+export default {
+  databaseUrl: process.env.DATABASE_URL,  // from .env.local, .env, or shell
+};
+```
+
 ---
 
 ## Schema Generation
