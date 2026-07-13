@@ -69,6 +69,7 @@ const categories = [
 export default function Page() {
   return (
     <DocLayout>
+      <style>{`.annotation-card { display: block; padding: 1rem; border: 1px solid var(--color-border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 150ms; } .annotation-card:hover { border-color: var(--color-accent); }`}</style>
       <h1>Annotations Reference</h1>
       <p>SlintORM uses <code>// comment</code> annotations on interface fields to control column types, constraints, validation, security, masking, relations, and more.</p>
 
@@ -80,17 +81,7 @@ export default function Page() {
               <Link
                 key={item.name}
                 href={item.href}
-                style={{
-                  display: 'block',
-                  padding: '1rem',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  transition: 'border-color 150ms',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-accent)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+                className="annotation-card"
               >
                 <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-accent)', marginBottom: '0.25rem' }}>
                   {item.name}
