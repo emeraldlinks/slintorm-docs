@@ -3,7 +3,7 @@ import CodeBlock from '@/components/CodeBlock';
 
 export const metadata = {
   title: 'Upcoming Features — SlintORM',
-  description: "Annotation roadmap for SlintORM — omit family and @mask are shipped; security, validation, sanitization, audit, and more coming.",
+  description: "Annotation roadmap for SlintORM — omit family, @mask, validation, and security annotations are shipped; sanitization, expiry, audit, and more coming.",
   alternates: { canonical: '/docs/upcoming-features' },
 };
 
@@ -136,8 +136,9 @@ With @min/@max on price and @minLength/@maxLength on description, every code pat
     border: 'rgba(239, 68, 68, 0.2)',
     items: [
       {
-        name: '@hash (pbkdf2 / scrypt)',
-        summary: "One-way hashing using Node.js built-in crypto — pbkdf2 (default, 100k iterations) or scrypt (memory-hard). Stores algorithm$salt$hash format. Provides .verify(plaintext) for constant-time comparison.",
+        name: '@hash (pbkdf2)',
+        shipped: true,
+        summary: "One-way hashing using the Web Crypto API (works in Node.js, Deno, browsers) — PBKDF2 with SHA-256 (100k iterations). Stores pbkdf2$salt$hash format. Provides .verify(plaintext) for constant-time comparison.",
         scenario: `You're building the auth system for a B2B platform. Passwords must never be stored in plaintext. You need PBKDF2 with a strong iteration count, and you want to migrate to scrypt later without breaking existing hashes.
 
 When a user registers, @hash automatically pbkdf2-hashes the password field with a random salt before writing to the database. The stored format is "pbkdf2$abc123$hashvalue" — self-describing for future algorithm upgrades.
@@ -164,8 +165,9 @@ const match = user.password.verify("correct-horse-battery-staple");
 // true — uses crypto.timingSafeEqual`,
       },
       {
-        name: '@encrypt (AES-256-GCM / CBC)',
-        summary: "Two-way encryption using Node.js crypto. AES-256-GCM by default (authenticated, tamper-detection). Stores iv:ciphertext:authTag in base64. Key drawn from process.env with optional per-column HKDF derivation.",
+        name: '@encrypt (AES-256-GCM)',
+        shipped: true,
+        summary: "Two-way encryption using the Web Crypto API (works in Node.js, Deno, browsers). AES-256-GCM (authenticated, tamper-detection). Stores aes256gcm$iv$ct$tag format. Key derived from master encryptionKey via PBKDF2 per field.",
         scenario: `Your healthcare app stores patient Social Security Numbers (SSNs) and medical record numbers. Compliance (HIPAA, GDPR) requires encryption at rest — but you also need to read the plaintext values when rendering a patient's profile or billing a claim.
 
 With @encrypt, the field is transparently encrypted on write and decrypted on read. The stored value looks like "iv$ciphertext$authTag" — an attacker who dumps the database sees only random bytes. Only your application, holding the master encryption key in an environment variable, can decrypt.
@@ -195,7 +197,6 @@ console.log(record.ssn); // "123-45-6789"`,
       },
       {
         name: '@token',
-        shipped: true,
         summary: "Auto-generate cryptographically secure random tokens on insert using crypto.randomBytes. Configurable byte length, prefix, and encoding. Combine with @hash for API key patterns.",
         scenario: `You're launching an API platform. Every new team gets an API key like "sk_live_a1b2c3d4e5f6...". The key must be:
 1. Generated with cryptographic randomness (not Math.random)
@@ -468,17 +469,18 @@ interface User {
     items: [
       {
         name: '@secret',
-        summary: "Composite annotation that combines @hash + @omitjson + log-masking. One annotation = hash on write, never returned in queries, never logged. Ideal for API keys, client secrets, OAuth tokens, webhook signing secrets.",
+        shipped: true,
+        summary: "Composite annotation combining @hash (PBKDF2-hashed on write) + @omitjson (stripped from all read results). NOT log-redacted. Ideal for API keys, client secrets, OAuth tokens, webhook signing secrets.",
         scenario: `You generate API keys for developers: "sk_live_abc123...". This value must be:
 1. Hashed in the database (so a breach doesn't leak keys)
 2. Never returned by any query (so your list-all-keys admin endpoint doesn't accidentally expose them)
 3. Never written to query logs (so your debug logs don't contain secrets)
 
-@secret is the single-annotation solution. It hashes the value with @hash, strips it from query results with @omitjson, and the ORM logger redacts the field from its SQL log output. The raw value is returned exactly once — on the insert response — and never again.`,
+@secret is the single-annotation solution. It hashes the value with @hash and strips it from query results with @omitjson. The raw value is returned exactly once — on the insert response — and never again.`,
         example: `interface DeveloperKey {
   id: number;
   teamId: number;
-  // @secret — hashed, never returned, never logged
+  // @secret — hashed on write, stripped from reads
   apiKey: string;
   createdAt: string;
 }
@@ -593,7 +595,7 @@ export default function UpcomingFeaturesPage() {
         fontSize: '0.875rem',
       }}>
         <strong style={{ color: '#22C55E', fontFamily: 'var(--font-mono)' }}>
-          ✓ Omit family, @mask, and validation annotations shipped
+          ✓ Omit family, @mask, validation, and security annotations shipped
         </strong>
         <p style={{ marginTop: '0.25rem', color: 'var(--color-fg-muted)' }}>
           Remaining features are being implemented in batches of 3 per day.

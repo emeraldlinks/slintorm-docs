@@ -10,9 +10,115 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
+    version: '1.9.1',
+    date: '2026-07-13',
+    latest: true,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'RLS (Row-Level Security) support — `rls: true` config option enables automatic `set_config()` calls',
+          '`orm.withContext()` — sets RLS context values that propagate as PostgreSQL session parameters',
+          '`orm.rlsEnabled()` — returns whether RLS mode is active',
+          '`encryptionKey` option in ORMManagerConfig — master key (min 32 chars) for @encrypt annotations',
+          'Redundant RLS call skipping — caches last-set values to avoid repeated set_config calls',
+        ],
+      },
+      {
+        label: 'fix',
+        items: [
+          '27+ driver-specific SQL compatibility issues across queryBuilder, model, migrator, and migration-history',
+        ],
+      },
+      {
+        label: 'docs',
+        items: [
+          'RLS usage pattern documented in llms.txt',
+          '@secret marked shipped in docs and llms.txt',
+          'Annotation version badges added to llms.txt',
+          'ROADMAP.md updated with RLS in shipped, sug.txt items in planned',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.9.0',
+    date: '2026-07-11',
+    latest: false,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          '@encrypt fields now expose `.decrypt()` for on-demand decryption',
+          '@encrypt:(decrypt=auto) — transparent auto-decryption on read, returns plain string',
+          'Generator emits `& { verify() }` on @hash fields for type-safe `.verify()`',
+        ],
+      },
+      {
+        label: 'docs',
+        items: [
+          '@hash/@encrypt/@secret annotated examples added to README and llms.txt',
+          'Security module documented with usage patterns',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.7.0',
+    date: '2026-07-10',
+    latest: false,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'Security module — @hash (PBKDF2 via Web Crypto API), @encrypt (AES-256-GCM), @secret (@hash+@omitjson)',
+          '@email / @url / @uuid / @phone — format validators',
+          '@min / @max — numeric range validation',
+          '@minLength / @maxLength — string length validation',
+          '@pattern:regex — custom regex validation',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.6.1',
+    date: '2026-07-10',
+    latest: false,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          '@random:alnum / @random:lower / @random:upper / @random:hex / @random:custom — character set variants',
+          '@random with prefix/suffix options',
+          'extracted annotations.ts — centralized annotation parsing',
+        ],
+      },
+      {
+        label: 'ci',
+        items: [
+          'GitHub Actions workflow for auto-publish on push to main',
+          'Node 22 for built-in node:sqlite driver',
+        ],
+      },
+    ],
+  },
+  {
+    version: '1.5.2',
+    date: '2026-07-09',
+    latest: false,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'CLI auto-loads .env* files before config is imported',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.5.1',
     date: '2026-07-09',
-    latest: true,
+    latest: false,
     groups: [
       {
         label: 'fix',

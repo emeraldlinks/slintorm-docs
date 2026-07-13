@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.5.2
+- Version: 1.9.1
 
 ---
 
@@ -64,6 +64,8 @@ const orm = new ORMManager<ModelMap>({
   logs: false,                // log SQL to stdout
   modelMap: {} as ModelMap,   // type-only — enables typed orm.db store
   schema,                     // pre-built schema from generated.ts (optional in Node.js, required on edge)
+  encryptionKey: process.env.ENCRYPTION_KEY, // master key (min 32 chars) for @encrypt annotations
+  rls: true,                  // enable Row-Level Security mode via set_config()
 });
 
 await orm.migrate();          // Node.js only — never call in edge runtimes
@@ -72,14 +74,16 @@ export const db = orm.db;     // typed DBStore<ModelMap>
 
 ### ORMManagerConfig — all options
 
-| Option      | Type                                        | Required | Description |
-|-------------|---------------------------------------------|----------|-------------|
-| driver      | 'sqlite' \| 'postgres' \| 'mysql' \| 'mongodb' | Yes  | Database driver |
-| databaseUrl | string                                      | Yes      | Connection string or file path |
-| dir         | string                                      | No       | Source directory for schema scanning (default: process.cwd()) |
-| logs        | boolean                                     | No       | Log all SQL queries to stdout (default: false) |
-| schema      | object                                      | No*      | Pre-built schema from generated.ts. Optional in Node.js, required in edge runtimes |
-| modelMap    | object                                      | No       | Type-only value for typed db store. Use {} as ModelMap |
+| Option        | Type                                        | Required | Description |
+|---------------|---------------------------------------------|----------|-------------|
+| driver        | 'sqlite' \| 'postgres' \| 'mysql' \| 'mongodb' | Yes  | Database driver |
+| databaseUrl   | string                                      | Yes      | Connection string or file path |
+| dir           | string                                      | No       | Source directory for schema scanning (default: process.cwd()) |
+| logs          | boolean                                     | No       | Log all SQL queries to stdout (default: false) |
+| schema        | object                                      | No*      | Pre-built schema from generated.ts. Optional in Node.js, required in edge runtimes |
+| modelMap      | object                                      | No       | Type-only value for typed db store. Use {} as ModelMap |
+| encryptionKey | string                                      | No       | Master encryption key (min 32 chars). Required for @encrypt annotations |
+| rls           | boolean                                     | No       | Enable Row-Level Security mode via set_config() (default: false) |
 
 *schema is required in edge runtimes (Cloudflare Workers, Next.js Edge, Deno Deploy)
 
@@ -150,6 +154,9 @@ interface User {
 | @omitdb           | excludes field from DB — no column created, excluded from all read/write |
 | @omitjson         | stores in DB but strips from read results unless explicitly .select()ed |
 | @omitmigrate      | migrator ignores column — manual DDL; field still usable in queries |
+| @hash             | PBKDF2-hashed (salt + SHA-256, 100k iterations). `.verify(plaintext)` for comparison |
+| @encrypt          | AES-256-GCM encrypted via key derived from master `encryptionKey`. `.decrypt()` or `:(decrypt=auto)` |
+| @secret           | Composite `@hash` + `@omitjson`. Hashed on write, stripped from all read results |
 
 Annotations placed on the line directly above the field, or inline after the semicolon on the same line:
 ```typescript
@@ -752,6 +759,39 @@ CREATE TABLE _slint_migrations (
 
 ---
 
+## Row-Level Security (RLS) [v1.9.1]
+
+```typescript
+const orm = new ORMManager({
+  driver: 'postgres',
+  databaseUrl: process.env.DATABASE_URL!,
+  dir: './src',
+  rls: true,     // enable RLS mode
+  encryptionKey: process.env.ENCRYPTION_KEY,
+});
+
+// Set RLS context — values propagate as PostgreSQL session parameters
+await orm.withContext({ tenant_id: 'abc123' });
+
+// All subsequent queries use set_config('rls.tenant_id', 'abc123', false)
+// so RLS policies on the database enforce row-level filtering
+
+// Check if RLS is active
+const enabled = orm.rlsEnabled(); // boolean
+```
+
+**How it works:**
+- `rls: true` enables automatic `set_config()` calls before every query
+- Context keys are prefixed with `rls.` (e.g., `rls.tenant_id`)
+- Uses session-scoped `set_config` (third arg `false`) so settings persist across queries on the same connection
+- Redundant calls are skipped — ORM caches last-set RLS values
+
+**Requirements:**
+- The database user must NOT have `BYPASSRLS` attribute
+- Tables must have RLS policies that reference `current_setting('rls.tenant_id')`
+
+---
+
 ## CLI
 
 ```bash
@@ -945,7 +985,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.5.2)
+## package.json exports map (v1.9.1)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -997,11 +1037,11 @@ These annotations are being implemented in batches. All use zero external depend
 - `@minLength:N` / `@maxLength:N` — String length validation
 - `@pattern:regex` — Custom regex validation
 
-### Security (Node.js crypto, zero deps)
-- `@hash` — One-way hashing via pbkdf2/scrypt. `.verify()` for constant-time comparison
-- `@encrypt` — AES-256-GCM transparent encryption on write, decryption on read
-- `@token` — crypto.randomBytes token generation with prefix/encoding options
-- `@secret` — Composite: @hash + @omitjson + log-masking (for API keys, client secrets)
+### Security (Web Crypto API, zero deps)
+- `@hash` — PBKDF2 with SHA-256 (100k iterations). `.verify()` for constant-time comparison
+- `@encrypt` — AES-256-GCM authenticated encryption. Key derived per-field via PBKDF2. `.decrypt()` for on-demand decryption or `:(decrypt=auto)` for transparent decryption on read
+- `@secret` — shipped [v1.7]. Composite: `@hash` + `@omitjson`. Hashed on write, stripped from all read results. NOT log-redacted.
+- `@token` — (planned) crypto.randomBytes token generation with prefix/encoding options
 
 ### Sanitization
 - `@sanitize` — Input sanitization (trim, lower, upper, stripTags, escape)
@@ -1025,5 +1065,5 @@ These annotations are being implemented in batches. All use zero external depend
 
 ---
 
-*SlintORM v1.5.2 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.9.1 — https://github.com/emeraldlinks/slintorm*
 
