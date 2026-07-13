@@ -39,15 +39,29 @@ const categories = [
     ],
   },
   {
-    title: 'Field Metadata',
+    title: 'Column Constraints',
     items: [
-      { name: '@auto / @primaryKey', href: '/docs/models', desc: 'Auto-increment and primary key' },
-      { name: '@unique / @index', href: '/docs/models', desc: 'Unique constraint and indexes' },
-      { name: '@nullable / @not null', href: '/docs/models', desc: 'Nullability constraints' },
-      { name: '@default / @length', href: '/docs/models', desc: 'Default values and column length' },
-      { name: '@enum', href: '/docs/models', desc: 'Enum check constraints' },
-      { name: '@json', href: '/docs/models', desc: 'JSON column serialization' },
-      { name: '@softDelete', href: '/docs/soft-delete', desc: 'Soft delete support' },
+      { name: '@auto / @primaryKey', href: '/docs/annotations/constraints', desc: 'Auto-increment and primary key' },
+      { name: '@unique / @index', href: '/docs/annotations/constraints', desc: 'Unique constraint and indexes' },
+      { name: '@nullable / @not null', href: '/docs/annotations/constraints', desc: 'Nullability constraints' },
+      { name: '@default / @length', href: '/docs/annotations/constraints', desc: 'Default values and column length' },
+      { name: '@enum / @comment', href: '/docs/annotations/constraints', desc: 'Enum check constraints and column comments' },
+      { name: '@softDelete', href: '/docs/annotations/constraints', desc: 'Soft delete support' },
+    ],
+  },
+  {
+    title: 'Relations & Polymorphics',
+    items: [
+      { name: '@relation / @relationship', href: '/docs/annotations/relations', desc: 'One-to-many, many-to-one, one-to-one, many-to-many' },
+      { name: '@belongsTo / @hasMany / @hasOne / @belongsToMany', href: '/docs/annotations/relations', desc: 'Relation shortcuts' },
+      { name: '@polymorphicType / @polymorphicId', href: '/docs/annotations/polymorphic', desc: 'Polymorphic associations (morphTo)' },
+    ],
+  },
+  {
+    title: 'Serialization',
+    items: [
+      { name: '@json', href: '/docs/annotations/json', desc: 'JSON column serialization (auto stringify/parse)' },
+      { name: '@omit family', href: '/docs/annotations/omit', desc: '@omitdb, @omitjson, @omitmigrate' },
     ],
   },
 ];
