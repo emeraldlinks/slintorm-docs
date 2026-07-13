@@ -17,6 +17,7 @@ const nav = [
     group: 'Core Concepts',
     items: [
       { label: 'Models', href: '/docs/models' },
+      { label: 'Annotations', href: '/docs/annotations' },
       { label: 'defineModel', href: '/docs/define-model' },
       { label: 'CRUD', href: '/docs/crud' },
       { label: 'Upsert & findOrCreate', href: '/docs/upsert-find-or-create' },
