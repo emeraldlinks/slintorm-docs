@@ -95,7 +95,7 @@ teams?: Team[];`} filename="src/interfaces.ts" />
         </thead>
         <tbody>
           <tr>
-            <td><code>Post.user -> User has no inverse relation for Post</code></td>
+            <td><code>Post.user -&gt; User has no inverse relation for Post</code></td>
             <td>One side of a relation is missing the inverse annotation</td>
             <td>Add <code>@relation manytoone:Post</code> on the inverse side</td>
           </tr>
