@@ -10,9 +10,31 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
+    version: '1.9.5',
+    date: '2026-07-15',
+    latest: true,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'Balloon Hashing is now the default for `@hash` — memory-hard, SHA-256 based, zero deps (Web Crypto API)',
+          '`@hash:(algo=pbkdf2,iterations=N)` for PBKDF2 backward compat',
+          '`@hash:(algo=balloon,space=N,time=N,delta=N)` for custom Balloon cost params',
+          'Self-describing stored format: `balloon$space$time$delta$salt$hash`',
+        ],
+      },
+      {
+        label: 'fix',
+        items: [
+          'Balloon mix step now uses deterministic other-block index (was non-deterministic via crypto.getRandomValues)',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.9.1',
     date: '2026-07-13',
-    latest: true,
+    latest: false,
     groups: [
       {
         label: 'feat',

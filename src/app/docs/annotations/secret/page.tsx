@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <DocLayout>
       <h1><code>@secret</code> — @hash + @omitjson Composite</h1>
-      <p>Combines <code>@hash</code> (PBKDF2 one-way hashing) and <code>@omitjson</code> (stripped from all read results) into a single annotation. Ideal for API keys, OAuth tokens, webhook signing secrets — values that must be hashed at rest and never returned to callers.</p>
+      <p>Combines <code>@hash</code> (Balloon hashing, memory-hard) and <code>@omitjson</code> (stripped from all read results) into a single annotation. Ideal for API keys, OAuth tokens, webhook signing secrets — values that must be hashed at rest and never returned to callers.</p>
 
       <h2>Syntax</h2>
       <CodeBlock code={`// @secret — hashed on write, stripped from all reads
@@ -43,7 +43,7 @@ const match = await stored.apiKey.verify("sk_live_a1b2c3d4e5f6");
         <tbody>
           <tr>
             <td>Insert / Update write</td>
-            <td>Value is PBKDF2-hashed via <code>@hash</code> before storage</td>
+            <td>Value is Balloon-hashed (memory-hard) via <code>@hash</code> before storage</td>
           </tr>
           <tr>
             <td>get() / getAll() / query()</td>

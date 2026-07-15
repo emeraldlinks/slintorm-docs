@@ -11,7 +11,7 @@ const categories = [
   {
     title: 'Security',
     items: [
-      { name: '@hash', href: '/docs/annotations/hash', desc: 'PBKDF2 one-way hashing with .verify()' },
+      { name: '@hash', href: '/docs/annotations/hash', desc: 'Balloon hashing (memory-hard) with .verify(), PBKDF2 opt-in' },
       { name: '@encrypt', href: '/docs/annotations/encrypt', desc: 'AES-256-GCM encryption with .decrypt()' },
       { name: '@secret', href: '/docs/annotations/secret', desc: '@hash + @omitjson composite' },
     ],

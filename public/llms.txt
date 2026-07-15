@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.9.3
+- Version: 1.9.5
 
 ---
 
@@ -154,7 +154,7 @@ interface User {
 | @omitdb           | excludes field from DB — no column created, excluded from all read/write |
 | @omitjson         | stores in DB but strips from read results unless explicitly .select()ed |
 | @omitmigrate      | migrator ignores column — manual DDL; field still usable in queries |
-| @hash             | PBKDF2-hashed (salt + SHA-256, 600k iterations). `.verify(plaintext)` for comparison |
+| @hash             | Balloon-hashed (memory-hard, SHA-256, default space=65536/time=3/delta=3). `.verify(plaintext)` for comparison. `:(algo=pbkdf2,iterations=N)` for PBKDF2 opt-in |
 | @encrypt          | AES-256-GCM encrypted via key derived from master `encryptionKey`. `.decrypt()` or `:(decrypt=auto)` |
 | @secret           | Composite `@hash` + `@omitjson`. Hashed on write, stripped from all read results |
 
@@ -987,7 +987,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.9.3)
+## package.json exports map (v1.9.5)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -1040,7 +1040,7 @@ These annotations are being implemented in batches. All use zero external depend
 - `@pattern:regex` — Custom regex validation
 
 ### Security (Web Crypto API, zero deps)
-- `@hash` — PBKDF2 with SHA-256 (600k iterations). `.verify()` for constant-time comparison
+- `@hash` — Balloon Hashing (memory-hard, SHA-256, space=65536/time=3/delta=3). `.verify()` for constant-time comparison. `:(algo=pbkdf2)` for PBKDF2 opt-in
 - `@encrypt` — AES-256-GCM authenticated encryption. Key derived per-field via PBKDF2. `.decrypt()` for on-demand decryption or `:(decrypt=auto)` for transparent decryption on read
 - `@secret` — shipped [v1.7]. Composite: `@hash` + `@omitjson`. Hashed on write, stripped from all read results. NOT log-redacted.
 - `@token` — (planned) crypto.randomBytes token generation with prefix/encoding options
@@ -1067,5 +1067,5 @@ These annotations are being implemented in batches. All use zero external depend
 
 ---
 
-*SlintORM v1.9.3 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.9.5 — https://github.com/emeraldlinks/slintorm*
 
