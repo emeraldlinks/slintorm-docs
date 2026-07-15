@@ -154,9 +154,11 @@ interface User {
 | @omitdb           | excludes field from DB — no column created, excluded from all read/write |
 | @omitjson         | stores in DB but strips from read results unless explicitly .select()ed |
 | @omitmigrate      | migrator ignores column — manual DDL; field still usable in queries |
-| @hash             | PBKDF2-hashed (salt + SHA-256, 100k iterations). `.verify(plaintext)` for comparison |
+| @hash             | PBKDF2-hashed (salt + SHA-256, 600k iterations). `.verify(plaintext)` for comparison |
 | @encrypt          | AES-256-GCM encrypted via key derived from master `encryptionKey`. `.decrypt()` or `:(decrypt=auto)` |
 | @secret           | Composite `@hash` + `@omitjson`. Hashed on write, stripped from all read results |
+
+**⚠️ `;` is unsafe in annotation values.** `parseMetadata` splits on `;` naively — a literal semicolon inside a value (e.g. `@comment:some;text`) will misparse into extra spurious metadata keys.
 
 Annotations placed on the line directly above the field, or inline after the semicolon on the same line:
 ```typescript
@@ -1038,7 +1040,7 @@ These annotations are being implemented in batches. All use zero external depend
 - `@pattern:regex` — Custom regex validation
 
 ### Security (Web Crypto API, zero deps)
-- `@hash` — PBKDF2 with SHA-256 (100k iterations). `.verify()` for constant-time comparison
+- `@hash` — PBKDF2 with SHA-256 (600k iterations). `.verify()` for constant-time comparison
 - `@encrypt` — AES-256-GCM authenticated encryption. Key derived per-field via PBKDF2. `.decrypt()` for on-demand decryption or `:(decrypt=auto)` for transparent decryption on read
 - `@secret` — shipped [v1.7]. Composite: `@hash` + `@omitjson`. Hashed on write, stripped from all read results. NOT log-redacted.
 - `@token` — (planned) crypto.randomBytes token generation with prefix/encoding options

@@ -103,6 +103,15 @@ console.log(user.autoDecrypted);
         <li>Key derivation is memoized in a <code>Map</code> — repeated encrypt/decrypt on the same field reuse the cached <code>CryptoKey</code></li>
       </ul>
 
+      <h2>Gotcha: <code>.decrypt()</code> returns a wrapper object</h2>
+      <p>The field value at runtime is not a plain string — it's an object with <code>.decrypt()</code>, <code>.toString()</code>, <code>.valueOf()</code>, and <code>[Symbol.toPrimitive]()</code>. This means:</p>
+      <ul>
+        <li><code>typeof field === "string"</code> is <code>false</code> (it's <code>"object"</code>)</li>
+        <li><code>field === "plaintext"</code> is <code>false</code> even if the decrypted value matches</li>
+        <li><strong>Template literals and string concatenation work fine</strong> (<code>`${field}`</code>, <code>"" + field</code>) — these trigger <code>toString()</code></li>
+        <li><strong>Comparison trick:</strong> <code>String(field) === "plaintext"</code> or <code>field.toString() === "plaintext"</code></li>
+      </ul>
+
       <h2>See also</h2>
       <ul>
         <li><a href="/docs/annotations/hash"><code>@hash</code> — one-way hashing</a></li>
