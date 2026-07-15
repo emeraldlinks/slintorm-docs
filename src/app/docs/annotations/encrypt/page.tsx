@@ -108,7 +108,7 @@ console.log(user.autoDecrypted);
       <ul>
         <li><code>typeof field === "string"</code> is <code>false</code> (it's <code>"object"</code>)</li>
         <li><code>field === "plaintext"</code> is <code>false</code> even if the decrypted value matches</li>
-        <li><strong>Template literals and string concatenation work fine</strong> (<code>`${field}`</code>, <code>"" + field</code>) — these trigger <code>toString()</code></li>
+        <li><strong>Template literals and string concatenation work fine</strong> (<code>{'`${field}`'}</code>, <code>{'"" + field'}</code>) — these trigger <code>toString()</code></li>
         <li><strong>Comparison trick:</strong> <code>String(field) === "plaintext"</code> or <code>field.toString() === "plaintext"</code></li>
       </ul>
 
