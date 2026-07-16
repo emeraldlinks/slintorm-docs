@@ -10,9 +10,39 @@ export const metadata = {
 // Grouped from real GitHub commits on emeraldlinks/slintorm
 const releases = [
   {
+    version: '1.9.6',
+    date: '2026-07-16',
+    latest: true,
+    groups: [
+      {
+        label: 'feat',
+        items: [
+          'MongoDB transaction support — `startSession()` + `startTransaction()` via native MongoDB driver session API',
+          '`databaseName` config option — forwarded through ORM → DBAdapter for per-run isolated MongoDB databases',
+          'PG adapter `exec()` converts `?` → `$N` positional placeholders for raw SQL compatibility',
+          '`PG_ONLY=1` env var skips SQLite/MongoDB test runs',
+          '`MONGO_URL` and `PG_URL` env vars required for respective test suites (no hardcoded fallbacks)',
+          '`run()` throws `AggregateError` instead of `process.exit(1)`, enabling cleanup in callers',
+        ],
+      },
+      {
+        label: 'fix',
+        items: [
+          '`andWhereGroup`/`orWhereGroup` replace child-builder `$N` placeholders with `?` to avoid index collision on merge',
+          '`buildWhereClauseForPreload` accepts `startIndex` parameter to align `$N` numbering across preload joins',
+          '`buildMongoFilter` visibility changed from `private` to `protected` (fixes TS compilation in `AdvancedQueryBuilder`)',
+          '`databaseName` added to `ORMManagerConfig` type (fixes TS compilation in `index.ts`)',
+          '`SqlExpr.raw` SQLite timestamp expression made PG-aware (`NOW()` vs `datetime(\'now\')`)',
+          '`SqlExpr` values inlined in SQL insert rather than serialized as JSON',
+          'Transaction raw SQL uses double-quoted identifiers for PG case preservation',
+        ],
+      },
+    ],
+  },
+  {
     version: '1.9.5',
     date: '2026-07-15',
-    latest: true,
+    latest: false,
     groups: [
       {
         label: 'feat',

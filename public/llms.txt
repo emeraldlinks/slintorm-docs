@@ -8,7 +8,7 @@
 - Author: Joseph Christopher
 - Organization: emeraldlinks
 - License: MIT
-- Version: 1.9.5
+- Version: 1.9.6
 
 ---
 
@@ -700,7 +700,7 @@ await orm.batch([
 ]);
 ```
 
-MongoDB note: `orm.transaction()` is a no-op on MongoDB. Use the MongoDB driver session API for atomic multi-document operations.
+MongoDB note: `orm.transaction()` now wraps `startSession()` + `startTransaction()` — full multi-document transactions via the native MongoDB driver session API.
 
 ---
 
@@ -987,7 +987,7 @@ interface ModelHooks<T> {
 
 ---
 
-## package.json exports map (v1.9.5)
+## package.json exports map (v1.9.6)
 
 ```
 slintorm          -> dist/src/index.js      (Node.js — full API)
@@ -1067,5 +1067,5 @@ These annotations are being implemented in batches. All use zero external depend
 
 ---
 
-*SlintORM v1.9.5 — https://github.com/emeraldlinks/slintorm*
+*SlintORM v1.9.6 — https://github.com/emeraldlinks/slintorm*
 

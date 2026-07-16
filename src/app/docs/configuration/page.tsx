@@ -90,6 +90,7 @@ const options = [
   { key: 'logs', type: 'boolean', desc: 'Log every SQL query to stdout. Default: false.' },
   { key: 'schema', type: 'object', desc: 'Pre-built schema exported from schema/generated.ts. Optional in Node.js (ORM scans files instead), but required for edge runtimes where filesystem access is unavailable.' },
   { key: 'modelMap', type: 'object', desc: 'Type-only value for typing the db store. Use {} as ModelMap from generated.ts.' },
+  { key: 'databaseName', type: 'string', desc: 'Optional. Isolated database name for per-run MongoDB databases. Forwarded to DBAdapter for sandboxing.' },
 ];
 
 export default function ConfigurationPage() {

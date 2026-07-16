@@ -54,7 +54,7 @@ const orm = new ORMManager({
 const mongoSetup = `// MongoDB — uses a JSON command protocol
 // Each query is translated to find/insert/update/delete/count
 // DDL is a no-op (MongoDB is schemaless)
-// Note: no transaction support, no UNION, limited JOIN support
+// Note: MongoDB transactions via native session API, no UNION, limited JOIN support
 
 import ORMManager from 'slintorm';
 
@@ -103,7 +103,7 @@ const driverFeatures = [
   { feature: 'RETURNING * on INSERT', sqlite: '✓', pg: '✓', mysql: '—', mongo: '—' },
   { feature: 'ON CONFLICT (upsert)', sqlite: '✓', pg: '✓', mysql: '— (ON DUPLICATE KEY)', mongo: '—' },
   { feature: 'FULL OUTER JOIN', sqlite: '—', pg: '✓', mysql: '—', mongo: '—' },
-  { feature: 'Transactions', sqlite: '✓', pg: '✓', mysql: '✓', mongo: '—' },
+  { feature: 'Transactions', sqlite: '✓', pg: '✓', mysql: '✓', mongo: '✓' },
   { feature: 'Window functions', sqlite: '✓ (limited)', pg: '✓', mysql: '✓', mongo: '—' },
   { feature: 'IN-memory mode', sqlite: '✓ (:memory:)', pg: '—', mysql: '—', mongo: '—' },
 ];
