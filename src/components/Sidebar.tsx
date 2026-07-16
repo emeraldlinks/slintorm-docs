@@ -18,7 +18,9 @@ const nav = [
     items: [
       { label: 'Models', href: '/docs/models' },
       { label: 'Annotations', href: '/docs/annotations' },
-      { label: '→ @hash / @encrypt / @secret', href: '/docs/annotations/hash' },
+      { label: '→ @hash', href: '/docs/annotations/hash' },
+      { label: '→ @encrypt', href: '/docs/annotations/encrypt' },
+      { label: '→ @secret', href: '/docs/annotations/secret' },
       { label: '→ @mask', href: '/docs/annotations/mask' },
       { label: '→ @validation', href: '/docs/annotations/validation' },
       { label: '→ @random', href: '/docs/annotations/random' },
